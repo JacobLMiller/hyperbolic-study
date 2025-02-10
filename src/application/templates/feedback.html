@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid" id="main-body">
+       <div class="row" id="main">
+        <div class="col-3" id="sidebar">
+        <br>
+        </div>
+        <div class="col-9" id="visualization-container">
+            <div class="col-md-6 offset-md-2 feedback-con">
+                <form id="feedback-form">
+
+
+                <label class="statement" for="fq5">
+                    What is your familiarity with network diagrams and graph data? 
+                </label>
+                  <ul class="likert">
+                    <li>
+                      <input type="radio" name="fq5" value="1"/>
+                      <label>Completely new</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq5" value="2" />
+                      <label>Have seen them once or twice</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq5" value="3" />
+                      <label>Discussed in coursework</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq5" value="4" />
+                      <label>Use them for work</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq5" value="5" />
+                      <label>Expert</label>
+                    </li>
+                  </ul>
+
+                  <label class="statement" for="fq6">
+                    Which gender idenity describes you best?
+                </label>
+                  <ul class="likert">
+                    <li>
+                      <input type="radio" name="fq6" value="1"/>
+                      <label>Man</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq6" value="2" />
+                      <label>Woman</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq6" value="3" />
+                      <label>Non-binary</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq6" value="4" />
+                      <label>Other</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq6" value="5" />
+                      <label>Prefer not to say</label>
+                    </li>
+                  </ul>             
+                  
+                  
+                  <label class="statement" for="fq7">
+                    Which age group do you belong to? 
+                </label>
+                  <ul class="likert">
+                    <li>
+                      <input type="radio" name="fq7" value="1"/>
+                      <label>18-35</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq7" value="2" />
+                      <label>36-55</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq7" value="3" />
+                      <label>56-75</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq7" value="4" />
+                      <label>75+</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq7" value="7" />
+                      <label>Prefer not to say</label>
+                    </li>                    
+                  </ul>                
+                  
+                  <label class="statement" for="fq8">
+                    Did you find this survey...
+                </label>
+                  <ul class="likert">
+                    <li>
+                      <input type="radio" name="fq8" value="1"/>
+                      <label>Very easy</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq8" value="2" />
+                      <label>Easy</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq8" value="3" />
+                      <label>Neither easy nor difficult</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq8" value="4" />
+                      <label>Difficult</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq8" value="5" />
+                      <label>Very difficult</label>
+                    </li>
+                  </ul>        
+                  
+                  <label class="statement" for="fq9">
+                    How confident are you in your answers?
+                </label>
+                  <ul class="likert">
+                    <li>
+                      <input type="radio" name="fq9" value="1"/>
+                      <label>Very confident</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq9" value="2" />
+                      <label>Confident</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq9" value="3" />
+                      <label>Somewhat confident</label>
+                    </li>
+                    <li>
+                      <input type="radio" name="fq9" value="4" />
+                      <label>Not confident</label>
+                    </li>
+                  </ul>                            
+
+
+                    <label class="feedback-label" for="fq1">
+                        Please describe the strategy you used to answer the survey questions.
+                    </label>
+                    <textarea maxlength="1000" class="feedback-input" id="fq1" name="fq1" placeholder="Type here..."></textarea>
+
+                    <label class="feedback-label" for="fq2">
+                        Did you have any problems taking this study?
+                    </label>
+                    <textarea maxlength="1000" class="feedback-input" id="fq2" name="fq2" placeholder="Type here..."></textarea>
+                    
+                    <label class="feedback-label" for="fq4">
+                        Please leave any other comments or observations below.
+                    </label>
+                    <textarea maxlength="1000" class="feedback-input" id="fq4" name="fq4" placeholder="Type here..."></textarea>
+                    
+                    <br>
+                    <button type="submit" id="feedback-submit" class="submit-button">Submit</button>
+                </form>
+            </div>
+            
+        </div>
+        </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    let dataForm = document.getElementById("feedback-submit");
+      dataForm.addEventListener("click", (e) => {
+        e.preventDefault();
+        const new_form = document.querySelector('form')
+        const userData = new FormData(new_form);
+        
+        let userDataArr = [...userData];
+        let answers = Object.fromEntries(userDataArr);
+        
+        userData.append("responses", JSON.stringify(answers));
+
+        let url = `{{ url_for('store_feedback', id=id) }}`
+        fetch(url, {
+            method: 'POST',
+            body: userData
+        })
+        .then((response) => {
+            console.log(response.url);
+            window.location.href = response.url;
+        });
+        
+    });
+</script>
+{% endblock %}

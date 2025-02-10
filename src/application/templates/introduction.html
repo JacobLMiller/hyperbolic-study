@@ -1,0 +1,76 @@
+<div id="intro-container">
+            <p>
+                <div id="first-intro" style="display: inline;">
+                    <h2 class="intro-title">Riemann Spaces Study</h2>
+
+                    Hello Participants, <br>
+
+                    Thank you for participating in our Graph Visualization in Riemannian Spaces study! We're looking into how visualizations of graphs in
+                    different geometries can affect how people read, understand, and interact with graph data.
+                    You don't need any prior understanding of math, computer science, or visualization to participate and we expect the study to 
+                    take under 30 minutes regardless of technical background. On this page, we'll introduce a few concepts and how to use the visualization 
+                    tool. 
+
+                    <br><br>
+                    You will see a series of 18 questions in a single visualization style, then a few questions on how you felt about that style. 
+                    You'll then have an opportunity to take a break, and afterwards we'll change up the visualization style. You'll see three distinct
+                    styles for a total of 54 questions. 
+                    <br><br>
+
+                    First, some technical definitions. These will be available to read during the study, so don't worry about memorizing them. 
+                    {% include 'definitions.html' %}
+                </div>     
+                <div id="other-intro" style="display: none;">
+                    <h2 class="intro-title">You may now take a break.</h2>
+                    <hr>
+                     The visualization style has changed so 
+                        please familiarize yourself with this new style below before moving on. 
+                </div>           
+
+            <h3>Example visualization</h3>
+            In this part of the test, you will see graph visualizations in the style below. Try spending some time 
+            familiarizing yourself with the visualization style. You can click and drag to move the visualization, 
+            hover over nodes to highlight neighbors, and double click to automatically pan to a location. The exact interactions are 
+            listed below. These descriptions will also be available during the survey. 
+
+            <!-- <img width="800px" src="{{url_for('static', filename='img/euclidean.png')}}"> -->
+
+            <div id="visualization-container" style="width: 800px; height: 600px;"></div>
+
+            <!-- <h4>Introduction to Test</h4> -->
+
+            Based on different visualizations, you
+            will be answering some questions which can invlove counting, path following and estimation.
+             You can use
+            different interactions to make your tasks easier:
+            <ul>
+                <li><b>Click and drag:</b> You can click and drag to move the graph around the space.</li>
+                <li><b>Scrool (wheel):</b> Scrolling within the visualization will bring the graph closer or further away.</li>
+                <li><b>Hover:</b> By hovering over nodes, you will be able to see the hovered node highlighted (yellow) and
+                    the neighbors highlighted (red) along with them.</li>
+                <li><b>Double click:</b> Double clicking anywhere on any location in the drawing
+                    will recenter the point you clicked to the center of your screen.</li>
+                <li><b>Recenter:</b> Clicking the recenter button (top right of screen) will take the visualization back to it's original placement.</li>
+            </ul>
+            <br>
+
+            <div id="highlight-example">
+                Throughout the survey, you will be asked questions about <b><i>highlighted</i></b>
+                nodes, which will appear orange and slightly larger than the surrounding nodes as the image 
+                shown below.
+                <div>
+                    <img src="{{url_for('static', filename='img/highlight-example.png')}}" style="border: 1px solid black">
+                </div>
+                If a question asks about a highlighted node or nodes, first find and navigate to it using the 
+                click and drag or double click interactions, then determine the correct answer. 
+            </div>
+
+            <br>
+            <b>Back button has been disabled for the browser. Please do not attempt the test on a small-screen display such as a mobile phone or smart watch. 
+            </b>
+            <br>
+            Once you are ready to begin this section of the survey, click "Start Test" below.
+            You will be timed on your responses to individual questions, so please try to 
+            continue the survey until the indicated break. 
+            </p>
+</div>

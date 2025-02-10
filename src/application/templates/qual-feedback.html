@@ -1,0 +1,86 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="container-fluid" id="main-body">
+  <div class="row" id="main">
+    <div class="col-3" id="sidebar"><br /></div>
+    <div class="col-9" id="visualization-container">
+      <div>
+        Please respond to the following questions about the previous visualization style and interactions. 
+      </div>
+      <div class="col-md-6 offset-md-2 feedback-con">
+        <form onsubmit="formSubmit();" id="likert-form">
+
+          <!-- <div class="buttons">
+            <button type="submit" id="submit" class="submit-button">Submit</button> -->
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %} {% block scripts %} {{ super() }}
+<script src="{{url_for('static', filename='js/likert-questions.js')}}"></script>
+<script>
+
+  function create_likert_question(q_obj){
+
+      let id = q_obj.q_id;
+      let label = document.createElement("label");
+      label.setAttribute("class", "statement");
+      label.setAttribute("for", id);
+      label.innerHTML = q_obj.q_text;
+
+      let ans_arr = ["Strongly disagree", "Disagree", "Neutral / NA", "Agree", "Strongly agree"];
+      let children = ans_arr.map((ans, ind) => {
+          let s = `<li> 
+                      <input type="radio" name=${id} value=${ind+1} required/>
+                      <label>${ans}</label>
+                   </li>`;
+          return s;
+      });
+      
+      let answers = document.createElement("ul");
+      answers.setAttribute("class", "likert");
+      answers.innerHTML = children.join("");
+
+      let lForm = document.getElementById("likert-form");
+      lForm.appendChild(label);
+      lForm.appendChild(answers);
+
+    }
+
+
+  LIKERT_QUESTIONS.forEach(q => {
+    create_likert_question(q);
+  });
+
+  let submitButton = document.createElement("div");
+  submitButton.setAttribute("class", "buttons");
+  submitButton.innerHTML = `<button type="submit" id="submit" class="submit-button">Submit</button>`
+  document.getElementById("likert-form").appendChild(submitButton);
+
+  let dataForm = document.getElementById("submit");
+
+  dataForm.addEventListener("click", (e) => {
+      e.preventDefault();
+      const new_form = document.querySelector('form')
+      const userData = new FormData(new_form);
+      
+      let userDataArr = [...userData];
+      if (userDataArr.length === LIKERT_QUESTIONS.length) {
+        userData.append("final_answers", JSON.stringify(Object.fromEntries(userDataArr)));
+        let url = `{{ url_for('store_likert_feedback', id=id) }}`
+        fetch(url, {
+            method: 'POST',
+            body: userData
+        })
+        .then((response) => {
+            window.location.href = response.url;
+        });
+      } else {
+        alert("Please respond to each question before proceeding.");
+      }
+      
+  });
+</script>
+{% endblock %}

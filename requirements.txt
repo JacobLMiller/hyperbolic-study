@@ -1,0 +1,15 @@
+Bootstrap-Flask==2.2.0
+click==8.0.4
+Flask==2.2.2
+itsdangerous==2.0.1
+Jinja2==3.1.2
+MarkupSafe==2.1.1
+networkx
+pip==23.0.1
+setuptools==66.0.0
+Werkzeug==2.2.3
+wheel==0.38.4
+WTForms==3.0.1
+pymongo[srv]
+Flask-PyMongo
+python-dotenv

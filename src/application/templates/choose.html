@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    }
+    .radio-size {
+    height: 300px;
+    width: 300px;
+    }
+    .bg-sphere {
+    background-image:url("{{url_for('static', filename='img/spherical.png')}}");
+    background-size: cover;
+    }
+    .bg-euc {
+    background-image:url("{{url_for('static', filename='img/euclidean.png')}}");
+    background-size: cover;
+    }
+    .bg-hyper {
+    background-image:url("{{url_for('static', filename='img/hyperbolic.png')}}");
+    background-size: cover;
+    }
+    .image-row {
+    display: flex;
+    justify-content: space-between; /* this will add equal space between each image */
+    height: 100%;
+    width: 70%;
+    }
+    
+</style>
+<div class="container-fluid" id="main-body">
+    <div class="general">
+        <!-- <img src="https://images.unsplash.com/photo-1518796745738-41048802f99a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80" class="center" style="width:20%;" > -->
+            
+        
+          <form action="{{url_for('user_index_form', id=id)}}" id="selection">
+            <div class="image-row">
+                <label>
+                <div class="col-3 radio-size bg-sphere">
+                    <input type="radio" name="id" value="S">
+                    Spherical
+                </div>
+                </label>
+
+                <label>
+                <div class="col-3 radio-size bg-euc">
+                <input type="radio" name="id" value="E"> <br>
+                Euclidean
+                </div>
+                </label>
+
+                <label>
+                <div class="col-3 radio-size bg-hyper">
+                <input type="radio" name="id" value="H"> 
+                Hyperbolic
+                </div>
+                </label>                
+            </div>
+            <input type="submit" value="Take survey!">
+          </form>
+          <!-- <input id="submit-button" type="button" value="Take survey!" onclick="sendToSurvey()"> -->
+
+        </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    var ready = (callback) => {
+        if (document.readyState != "loading") callback();
+        else document.addEventListener("DOMContentLoaded", callback);
+      }
+
+    ready(() => { 
+
+    });
+
+
+</script>
+{% endblock %}

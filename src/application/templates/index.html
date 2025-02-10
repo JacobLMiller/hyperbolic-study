@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid" id="main-body">
+       <div class="row" id="main">
+        <div class="col-3" id="sidebar">
+            Sidebar text.
+        </div>
+        <div class="col-9" id="visualization-container">
+            This is the visualization container. 
+            IDs are E1, E2, E3 for euclidean and S1, ... and H1, ... for spherical and hyperbolic respectively.
+            <form action="{{ url_for('user_index_form', id=id) }}">
+                <input type="text" id="input-id" name="id" label="Enter ID" placeholder="ID">
+                <button type="submit">Submit</button>
+            </form>
+            <svg id="mainVis"></svg>
+        </div>
+        </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<!-- <script src="{{url_for('static', filename='js/euclideanVis.js')}}"></script>
+<script>
+    var ready = (callback) => {
+        if (document.readyState != "loading") callback();
+        else document.addEventListener("DOMContentLoaded", callback);
+      }
+
+    ready(() => { 
+        var data = {{data | tojson}};
+        let vis = new EuclideanVis("#mainVis", data.nodes, data.links);
+        vis.process();
+        vis.draw();
+
+    });
+
+</script> -->
+{% endblock %}

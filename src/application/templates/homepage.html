@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid" id="main-body">
+    <div class="row" id="main">
+        <!-- <div class="col-3" id="sidebar">
+            User ID: {{id}} <br>
+            <span id="postTest"></span>
+
+        </div> -->
+        <div id="text-container" style="width: 80%; margin: 0 10%;">
+            {% include 'introduction.html' %} 
+            <div id="geometry-unique">
+            </div>
+            <form action="{{ url_for('start_test', id=id) }}">
+                <button id="start-test" class="submit-button" type="submit">Start Test</button>
+            </form>      
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{url_for('static', filename='js/hyperbolic_canvas.js')}}"></script>
+<script src="{{url_for('static', filename='js/euclideanVis.js')}}"></script>
+<script src="{{url_for('static', filename='js/sphericalVis.js')}}"></script>
+<script src="{{url_for('static', filename='js/hyperbolicVis.js')}}"></script><script>
+
+    var ready = (callback) => {
+        if (document.readyState != "loading") callback();
+        else document.addEventListener("DOMContentLoaded", callback);
+    }
+
+    ready(() => {
+
+        var data = {{ data | tojson}};
+
+        if (!data.first_time){
+            document.getElementById("first-intro").style.display = "none";
+            document.getElementById("other-intro").style.display = "inline";
+        }
+
+
+        let G = data.graph;
+
+        let vis;
+        if (data.geom === "E"){
+            let svg = d3.select("#visualization-container").append("svg")
+                .attr("id", "mainVis")
+                .style("width", "800px")
+                .style("height", "600px")
+                .style("border", "3px solid black");                                
+            vis = new EuclideanVis("#mainVis", G.nodes, G.links, G.graph.central_node);
+        }
+        else if(data.geom === "S"){
+            let svg = d3.select("#visualization-container").append("svg")
+                .attr("id", "mainVis")
+                .style("width", "800px")
+                .style("height", "600px")
+                .style("border", "3px solid black");                
+            vis = new SphericalVis("#mainVis", G.nodes, G.links);
+        }
+        else if(data.geom === "H"){
+            document.getElementById("visualization-container").style = "width: 800px; height: 800px;"
+            let svg = d3.select("#visualization-container").append("div")
+                    .attr("id", "hyperbolic-canvas")
+                    .style("width", "800px")
+                    .style("height", "800px")
+                    .style("border", "3px solid black");
+            vis = new HyperbolicVis("#hyperbolic-canvas", G.nodes, G.links, G.graph.central_node);
+        }
+
+        vis.process();
+        vis.draw();
+        vis.interact();
+
+
+        if (data.finished == "False") {
+            document.getElementById("start-test").style.display = "none";
+            document.getElementById("postTest").textContent = "Thanks for testing! You can exit the tool.";
+        } else {
+            document.getElementById("start-test").style.display = "block";
+        }
+    });
+</script>
+{% endblock %}

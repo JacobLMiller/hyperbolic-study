@@ -1,0 +1,1066 @@
+{
+    "questions": [
+        {
+            "q_type": "T1",
+            "q_text": "How many neighbors of the highlighted node have degree 4?",
+            "q_options": {
+                "option-1": 1,
+                "option-2": 2,
+                "option-3": 3,
+                "option-4": 4
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_0"
+            },
+            "node": [
+                "node_1"
+            ],
+            "q_answer": "option-2",
+            "question_id": "q_0"
+        },
+        {
+            "q_type": "T2",
+            "q_text": "How many neighbors do the two nodes have in common?",
+            "q_options": {
+                "option-1": 2,
+                "option-2": 3,
+                "option-3": 4,
+                "option-4": 5
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_0"
+            },
+            "node": [
+                "node_39",
+                "node_33"
+            ],
+            "q_answer": "option-4",
+            "question_id": "q_1"
+        },
+        {
+            "q_type": "T3",
+            "q_text": "What is the <b><i>length</i></b> (number of edges) of the shortest path between the two highlighted nodes?",
+            "q_options": {
+                "option-1": 1,
+                "option-2": 2,
+                "option-3": 3,
+                "option-4": 4
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_0"
+            },
+            "node": [
+                "node_40",
+                "node_39"
+            ],
+            "q_answer": "option-3",
+            "question_id": "q_2"
+        },
+        {
+            "q_type": "T4",
+            "q_text": "Please <b><i>estimate</i></b> how many <i><b>nodes</i></b> are in the graph?",
+            "q_options": {
+                "option-1": "0-100",
+                "option-2": "100-200",
+                "option-3": "300-400",
+                "option-4": "400-500"
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_0"
+            },
+            "node": [],
+            "q_answer": "option-1",
+            "question_id": "q_3"
+        },
+        {
+            "q_type": "T5",
+            "q_text": "What is the most frequent degree of the highlighted nodes?",
+            "q_options": {
+                "option-1": 5,
+                "option-2": 6,
+                "option-3": 9,
+                "option-4": 10
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_0"
+            },
+            "node": [
+                "node_24",
+                "node_5",
+                "node_23"
+            ],
+            "q_answer": "option-2",
+            "question_id": "q_4"
+        },
+        {
+            "q_type": "T6",
+            "q_text": "How many nodes are reachable in <b><i>at least</b></i> 3 steps from the highlighted node?",
+            "q_options": {
+                "option-1": 6,
+                "option-2": 7,
+                "option-3": 8,
+                "option-4": 10
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_0"
+            },
+            "node": [
+                "node_3"
+            ],
+            "q_answer": "option-3",
+            "question_id": "q_5"
+        },
+        {
+            "q_type": "T1",
+            "q_text": "How many neighbors of the highlighted node have degree 4?",
+            "q_options": {
+                "option-1": 1,
+                "option-2": 2,
+                "option-3": 3,
+                "option-4": 4
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_1"
+            },
+            "node": [
+                "node_69"
+            ],
+            "q_answer": "option-3",
+            "question_id": "q_6"
+        },
+        {
+            "q_type": "T2",
+            "q_text": "How many neighbors do the two nodes have in common?",
+            "q_options": {
+                "option-1": 1,
+                "option-2": 2,
+                "option-3": 3,
+                "option-4": 4
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_1"
+            },
+            "node": [
+                "node_73",
+                "node_78"
+            ],
+            "q_answer": "option-2",
+            "question_id": "q_7"
+        },
+        {
+            "q_type": "T3",
+            "q_text": "What is the <b><i>length</i></b> (number of edges) of the shortest path between the two highlighted nodes?",
+            "q_options": {
+                "option-1": 2,
+                "option-2": 3,
+                "option-3": 4,
+                "option-4": 5
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_1"
+            },
+            "node": [
+                "node_65",
+                "node_36"
+            ],
+            "q_answer": "option-2",
+            "question_id": "q_8"
+        },
+        {
+            "q_type": "T4",
+            "q_text": "Please <b><i>estimate</i></b> how many <i><b>edges</i></b> are in the graph?",
+            "q_options": {
+                "option-1": "150-250",
+                "option-2": "250-350",
+                "option-3": "350-450",
+                "option-4": "450-550"
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_1"
+            },
+            "node": [],
+            "q_answer": "option-3",
+            "question_id": "q_9"
+        },
+        {
+            "q_type": "T5",
+            "q_text": "What is the most frequent degree of the highlighted nodes?",
+            "q_options": {
+                "option-1": 7,
+                "option-2": 8,
+                "option-3": 12,
+                "option-4": 13
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_1"
+            },
+            "node": [
+                "node_22",
+                "node_71",
+                "node_82",
+                "node_35"
+            ],
+            "q_answer": "option-2",
+            "question_id": "q_10"
+        },
+        {
+            "q_type": "T6",
+            "q_text": "How many nodes are reachable in <b><i>at least</b></i> 3 steps from the highlighted node?",
+            "q_options": {
+                "option-1": 6,
+                "option-2": 8,
+                "option-3": 11,
+                "option-4": 13
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_1"
+            },
+            "node": [
+                "node_75"
+            ],
+            "q_answer": "option-3",
+            "question_id": "q_11"
+        },
+        {
+            "q_type": "T1",
+            "q_text": "How many neighbors of the highlighted node have degree 5?",
+            "q_options": {
+                "option-1": 1,
+                "option-2": 2,
+                "option-3": 3,
+                "option-4": 4
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_2"
+            },
+            "node": [
+                "node_147"
+            ],
+            "q_answer": "option-3",
+            "question_id": "q_12"
+        },
+        {
+            "q_type": "T2",
+            "q_text": "How many neighbors do the two nodes have in common?",
+            "q_options": {
+                "option-1": 2,
+                "option-2": 3,
+                "option-3": 4,
+                "option-4": 5
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_2"
+            },
+            "node": [
+                "node_9",
+                "node_8"
+            ],
+            "q_answer": "option-3",
+            "question_id": "q_13"
+        },
+        {
+            "q_type": "T3",
+            "q_text": "What is the <b><i>length</i></b> (number of edges) of the shortest path between the two highlighted nodes?",
+            "q_options": {
+                "option-1": 2,
+                "option-2": 3,
+                "option-3": 4,
+                "option-4": 5
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_2"
+            },
+            "node": [
+                "node_27",
+                "node_23"
+            ],
+            "q_answer": "option-3",
+            "question_id": "q_14"
+        },
+        {
+            "q_type": "T4",
+            "q_text": "Please <b><i>estimate</i></b> how many <i><b>nodes</i></b> are in the graph?",
+            "q_options": {
+                "option-1": "50-150",
+                "option-2": "150-250",
+                "option-3": "250-350",
+                "option-4": "350-450"
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_2"
+            },
+            "node": [],
+            "q_answer": "option-1",
+            "question_id": "q_15"
+        },
+        {
+            "q_type": "T5",
+            "q_text": "What is the most frequent degree of the highlighted nodes?",
+            "q_options": {
+                "option-1": 1,
+                "option-2": 5,
+                "option-3": 7,
+                "option-4": 8
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_2"
+            },
+            "node": [
+                "node_86",
+                "node_78",
+                "node_76",
+                "node_84",
+                "node_94"
+            ],
+            "q_answer": "option-2",
+            "question_id": "q_16"
+        },
+        {
+            "q_type": "T6",
+            "q_text": "How many nodes are reachable in <b><i>at least</b></i> 3 steps from the highlighted node?",
+            "q_options": {
+                "option-1": 1,
+                "option-2": 2,
+                "option-3": 3,
+                "option-4": 4
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "e_group_2"
+            },
+            "node": [
+                "node_159"
+            ],
+            "q_answer": "option-4",
+            "question_id": "q_17"
+        },
+        {
+            "q_type": "T1",
+            "q_text": "How many neighbors of the highlighted node have degree 2?",
+            "q_options": {
+                "option-1": 1,
+                "option-2": 2,
+                "option-3": 3,
+                "option-4": 4
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_0"
+            },
+            "node": [
+                "node_27"
+            ],
+            "q_answer": "option-2",
+            "question_id": "q_18"
+        },
+        {
+            "q_type": "T2",
+            "q_text": "How many neighbors do the two nodes have in common?",
+            "q_options": {
+                "option-1": 2,
+                "option-2": 3,
+                "option-3": 4,
+                "option-4": 5
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_0"
+            },
+            "node": [
+                "node_38",
+                "node_9"
+            ],
+            "q_answer": "option-4",
+            "question_id": "q_19"
+        },
+        {
+            "q_type": "T3",
+            "q_text": "What is the <b><i>length</i></b> (number of edges) of the shortest path between the two highlighted nodes?",
+            "q_options": {
+                "option-1": 2,
+                "option-2": 3,
+                "option-3": 4,
+                "option-4": 5
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_0"
+            },
+            "node": [
+                "node_19",
+                "node_1"
+            ],
+            "q_answer": "option-3",
+            "question_id": "q_20"
+        },
+        {
+            "q_type": "T4",
+            "q_text": "Please <b><i>estimate</i></b> how many <i><b>edges</i></b> are in the graph?",
+            "q_options": {
+                "option-1": "0-100",
+                "option-2": "100-200",
+                "option-3": "200-300",
+                "option-4": "300-400"
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_0"
+            },
+            "node": [],
+            "q_answer": "option-2",
+            "question_id": "q_21"
+        },
+        {
+            "q_type": "T5",
+            "q_text": "What is the most frequent degree of the highlighted nodes?",
+            "q_options": {
+                "option-1": 5,
+                "option-2": 11,
+                "option-3": 12,
+                "option-4": 14
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_0"
+            },
+            "node": [
+                "node_16",
+                "node_3",
+                "node_7",
+                "node_17",
+                "node_48",
+                "node_33"
+            ],
+            "q_answer": "option-1",
+            "question_id": "q_22"
+        },
+        {
+            "q_type": "T6",
+            "q_text": "How many nodes are reachable in <b><i>at least</b></i> 2 steps from the highlighted node?",
+            "q_options": {
+                "option-1": 7,
+                "option-2": 8,
+                "option-3": 12,
+                "option-4": 13
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_0"
+            },
+            "node": [
+                "node_49"
+            ],
+            "q_answer": "option-2",
+            "question_id": "q_23"
+        },
+        {
+            "q_type": "T1",
+            "q_text": "How many neighbors of the highlighted node have degree 3?",
+            "q_options": {
+                "option-1": 1,
+                "option-2": 2,
+                "option-3": 3,
+                "option-4": 4
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_1"
+            },
+            "node": [
+                "node_49"
+            ],
+            "q_answer": "option-2",
+            "question_id": "q_24"
+        },
+        {
+            "q_type": "T2",
+            "q_text": "How many neighbors do the two nodes have in common?",
+            "q_options": {
+                "option-1": 2,
+                "option-2": 3,
+                "option-3": 4,
+                "option-4": 5
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_1"
+            },
+            "node": [
+                "node_5",
+                "node_61"
+            ],
+            "q_answer": "option-1",
+            "question_id": "q_25"
+        },
+        {
+            "q_type": "T3",
+            "q_text": "What is the <b><i>length</i></b> (number of edges) of the shortest path between the two highlighted nodes?",
+            "q_options": {
+                "option-1": 2,
+                "option-2": 3,
+                "option-3": 4,
+                "option-4": 5
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_1"
+            },
+            "node": [
+                "node_54",
+                "node_50"
+            ],
+            "q_answer": "option-4",
+            "question_id": "q_26"
+        },
+        {
+            "q_type": "T4",
+            "q_text": "Please <b><i>estimate</i></b> how many <i><b>nodes</i></b> are in the graph?",
+            "q_options": {
+                "option-1": "50-150",
+                "option-2": "150-250",
+                "option-3": "250-350",
+                "option-4": "350-450"
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_1"
+            },
+            "node": [],
+            "q_answer": "option-1",
+            "question_id": "q_27"
+        },
+        {
+            "q_type": "T5",
+            "q_text": "What is the most frequent degree of the highlighted nodes?",
+            "q_options": {
+                "option-1": 8,
+                "option-2": 9,
+                "option-3": 16,
+                "option-4": 22
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_1"
+            },
+            "node": [
+                "node_96",
+                "node_95",
+                "node_91",
+                "node_82",
+                "node_69",
+                "node_55"
+            ],
+            "q_answer": "option-1",
+            "question_id": "q_28"
+        },
+        {
+            "q_type": "T6",
+            "q_text": "How many nodes are reachable in <b><i>at least</b></i> 3 steps from the highlighted node?",
+            "q_options": {
+                "option-1": 5,
+                "option-2": 6,
+                "option-3": 8,
+                "option-4": 13
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_1"
+            },
+            "node": [
+                "node_63"
+            ],
+            "q_answer": "option-3",
+            "question_id": "q_29"
+        },
+        {
+            "q_type": "T1",
+            "q_text": "How many neighbors of the highlighted node have degree 4?",
+            "q_options": {
+                "option-1": 1,
+                "option-2": 2,
+                "option-3": 3,
+                "option-4": 4
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_2"
+            },
+            "node": [
+                "node_0"
+            ],
+            "q_answer": "option-2",
+            "question_id": "q_30"
+        },
+        {
+            "q_type": "T2",
+            "q_text": "How many neighbors do the two nodes have in common?",
+            "q_options": {
+                "option-1": 1,
+                "option-2": 2,
+                "option-3": 3,
+                "option-4": 4
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_2"
+            },
+            "node": [
+                "node_28",
+                "node_11"
+            ],
+            "q_answer": "option-1",
+            "question_id": "q_31"
+        },
+        {
+            "q_type": "T3",
+            "q_text": "What is the <b><i>length</i></b> (number of edges) of the shortest path between the two highlighted nodes?",
+            "q_options": {
+                "option-1": 2,
+                "option-2": 3,
+                "option-3": 4,
+                "option-4": 5
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_2"
+            },
+            "node": [
+                "node_56",
+                "node_28"
+            ],
+            "q_answer": "option-2",
+            "question_id": "q_32"
+        },
+        {
+            "q_type": "T4",
+            "q_text": "Please <b><i>estimate</i></b> how many <i><b>edges</i></b> are in the graph?",
+            "q_options": {
+                "option-1": "0-100",
+                "option-2": "100-200",
+                "option-3": "200-300",
+                "option-4": "300-400"
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_2"
+            },
+            "node": [],
+            "q_answer": "option-2",
+            "question_id": "q_33"
+        },
+        {
+            "q_type": "T5",
+            "q_text": "What is the most frequent degree of the highlighted nodes?",
+            "q_options": {
+                "option-1": 1,
+                "option-2": 2,
+                "option-3": 3,
+                "option-4": 11
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_2"
+            },
+            "node": [
+                "node_64",
+                "node_57",
+                "node_127",
+                "node_8",
+                "node_139"
+            ],
+            "q_answer": "option-1",
+            "question_id": "q_34"
+        },
+        {
+            "q_type": "T6",
+            "q_text": "How many nodes are reachable in <b><i>at least</b></i> 2 steps from the highlighted node?",
+            "q_options": {
+                "option-1": 5,
+                "option-2": 6,
+                "option-3": 7,
+                "option-4": 8
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "h_group_2"
+            },
+            "node": [
+                "node_75"
+            ],
+            "q_answer": "option-3",
+            "question_id": "q_35"
+        },
+        {
+            "q_type": "T1",
+            "q_text": "How many neighbors of the highlighted node have degree 5?",
+            "q_options": {
+                "option-1": 1,
+                "option-2": 2,
+                "option-3": 3,
+                "option-4": 4
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_0"
+            },
+            "node": [
+                "node_27"
+            ],
+            "q_answer": "option-2",
+            "question_id": "q_36"
+        },
+        {
+            "q_type": "T2",
+            "q_text": "How many neighbors do the two nodes have in common?",
+            "q_options": {
+                "option-1": 4,
+                "option-2": 5,
+                "option-3": 6,
+                "option-4": 7
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_0"
+            },
+            "node": [
+                "node_35",
+                "node_22"
+            ],
+            "q_answer": "option-3",
+            "question_id": "q_37"
+        },
+        {
+            "q_type": "T3",
+            "q_text": "What is the <b><i>length</i></b> (number of edges) of the shortest path between the two highlighted nodes?",
+            "q_options": {
+                "option-1": 5,
+                "option-2": 6,
+                "option-3": 7,
+                "option-4": 8
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_0"
+            },
+            "node": [
+                "node_49",
+                "node_26"
+            ],
+            "q_answer": "option-2",
+            "question_id": "q_38"
+        },
+        {
+            "q_type": "T4",
+            "q_text": "Please <b><i>estimate</i></b> how many <i><b>edges</i></b> are in the graph?",
+            "q_options": {
+                "option-1": "0-100",
+                "option-2": "100-200",
+                "option-3": "200-300",
+                "option-4": "300-400"
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_0"
+            },
+            "node": [],
+            "q_answer": "option-2",
+            "question_id": "q_39"
+        },
+        {
+            "q_type": "T5",
+            "q_text": "What is the most frequent degree of the highlighted nodes?",
+            "q_options": {
+                "option-1": 2,
+                "option-2": 4,
+                "option-3": 6,
+                "option-4": 7
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_0"
+            },
+            "node": [
+                "node_39",
+                "node_1",
+                "node_21"
+            ],
+            "q_answer": "option-3",
+            "question_id": "q_40"
+        },
+        {
+            "q_type": "T6",
+            "q_text": "How many nodes are reachable in <b><i>at least</b></i> 3 steps from the highlighted node?",
+            "q_options": {
+                "option-1": 6,
+                "option-2": 7,
+                "option-3": 9,
+                "option-4": 11
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_0"
+            },
+            "node": [
+                "node_31"
+            ],
+            "q_answer": "option-1",
+            "question_id": "q_41"
+        },
+        {
+            "q_type": "T1",
+            "q_text": "How many neighbors of the highlighted node have degree 4?",
+            "q_options": {
+                "option-1": 2,
+                "option-2": 3,
+                "option-3": 4,
+                "option-4": 5
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_1"
+            },
+            "node": [
+                "node_18"
+            ],
+            "q_answer": "option-3",
+            "question_id": "q_42"
+        },
+        {
+            "q_type": "T2",
+            "q_text": "How many neighbors do the two nodes have in common?",
+            "q_options": {
+                "option-1": 5,
+                "option-2": 6,
+                "option-3": 7,
+                "option-4": 8
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_1"
+            },
+            "node": [
+                "node_19",
+                "node_97"
+            ],
+            "q_answer": "option-2",
+            "question_id": "q_43"
+        },
+        {
+            "q_type": "T3",
+            "q_text": "What is the <b><i>length</i></b> (number of edges) of the shortest path between the two highlighted nodes?",
+            "q_options": {
+                "option-1": 4,
+                "option-2": 5,
+                "option-3": 6,
+                "option-4": 7
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_1"
+            },
+            "node": [
+                "node_33",
+                "node_27"
+            ],
+            "q_answer": "option-3",
+            "question_id": "q_44"
+        },
+        {
+            "q_type": "T4",
+            "q_text": "Please <b><i>estimate</i></b> how many <i><b>nodes</i></b> are in the graph?",
+            "q_options": {
+                "option-1": "0-50",
+                "option-2": "50-150",
+                "option-3": "150-200",
+                "option-4": "200-250"
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_1"
+            },
+            "node": [],
+            "q_answer": "option-2",
+            "question_id": "q_45"
+        },
+        {
+            "q_type": "T5",
+            "q_text": "What is the most frequent degree of the highlighted nodes?",
+            "q_options": {
+                "option-1": 8,
+                "option-2": 18,
+                "option-3": 22,
+                "option-4": 23
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_1"
+            },
+            "node": [
+                "node_44",
+                "node_22",
+                "node_16",
+                "node_5",
+                "node_4",
+                "node_36"
+            ],
+            "q_answer": "option-1",
+            "question_id": "q_46"
+        },
+        {
+            "q_type": "T6",
+            "q_text": "How many nodes are reachable in <b><i>at least</b></i> 3 steps from the highlighted node?",
+            "q_options": {
+                "option-1": 6,
+                "option-2": 7,
+                "option-3": 8,
+                "option-4": 11
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_1"
+            },
+            "node": [
+                "node_70"
+            ],
+            "q_answer": "option-3",
+            "question_id": "q_47"
+        },
+        {
+            "q_type": "T1",
+            "q_text": "How many neighbors of the highlighted node have degree 2?",
+            "q_options": {
+                "option-1": 1,
+                "option-2": 2,
+                "option-3": 3,
+                "option-4": 4
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_2"
+            },
+            "node": [
+                "node_81"
+            ],
+            "q_answer": "option-2",
+            "question_id": "q_48"
+        },
+        {
+            "q_type": "T2",
+            "q_text": "How many neighbors do the two nodes have in common?",
+            "q_options": {
+                "option-1": 1,
+                "option-2": 2,
+                "option-3": 3,
+                "option-4": 4
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_2"
+            },
+            "node": [
+                "node_136",
+                "node_135"
+            ],
+            "q_answer": "option-1",
+            "question_id": "q_49"
+        },
+        {
+            "q_type": "T3",
+            "q_text": "What is the <b><i>length</i></b> (number of edges) of the shortest path between the two highlighted nodes?",
+            "q_options": {
+                "option-1": 1,
+                "option-2": 2,
+                "option-3": 3,
+                "option-4": 4
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_2"
+            },
+            "node": [
+                "node_165",
+                "node_106"
+            ],
+            "q_answer": "option-3",
+            "question_id": "q_50"
+        },
+        {
+            "q_type": "T4",
+            "q_text": "Please <b><i>estimate</i></b> how many <i><b>nodes</i></b> are in the graph?",
+            "q_options": {
+                "option-1": "0-100",
+                "option-2": "100-200",
+                "option-3": "200-300",
+                "option-4": "300-400"
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_2"
+            },
+            "node": [],
+            "q_answer": "option-3",
+            "question_id": "q_51"
+        },
+        {
+            "q_type": "T5",
+            "q_text": "What is the most frequent degree of the highlighted nodes?",
+            "q_options": {
+                "option-1": 2,
+                "option-2": 3,
+                "option-3": 6,
+                "option-4": 7
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_2"
+            },
+            "node": [
+                "node_161",
+                "node_101",
+                "node_17",
+                "node_163",
+                "node_162",
+                "node_191",
+                "node_30"
+            ],
+            "q_answer": "option-1",
+            "question_id": "q_52"
+        },
+        {
+            "q_type": "T6",
+            "q_text": "How many nodes are reachable in <b><i>at least</b></i> 2 steps from the highlighted node?",
+            "q_options": {
+                "option-1": 1,
+                "option-2": 2,
+                "option-3": 5,
+                "option-4": 8
+            },
+            "graph": {
+                "graph_type": "eucldiean",
+                "graph_id": "s_group_2"
+            },
+            "node": [
+                "node_158"
+            ],
+            "q_answer": "option-3",
+            "question_id": "q_53"
+        }
+    ]
+}

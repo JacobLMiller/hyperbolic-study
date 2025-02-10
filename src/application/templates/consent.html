@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid" id="main-body">
+       <div class="row" id="main">
+        <div class="col-3" id="sidebar">
+        </div>
+        <div class="col-9" id="visualization-container">
+            <h3>Research Study Consent</h3>
+            <br>
+            <b>You are being asked to participate in a research study.</b> Your participation in this research study is 
+            voluntary and you hold the right to withdraw at any moment during the test. This text contains important information about this 
+            study and what to expect if you decide to participate. Please consider the following information carefully and you may also reach out to 
+            
+            <a href="mailto:jacobmiller1@arizona.edu">jacobmiller1@arizona.edu</a> 
+            
+            to ask questions before making your decision whether to participate. <br><br>
+
+            <ol>
+                <li>
+                    You will be shown a series of interactive data visualizations and asked to answer questions 
+                    about the shown data. You will be given a short introduction on how to use the given tool. 
+                    Your responses will help us better understand how users interact with data visualizations. 
+                    The study should take no more than 30 minutes to complete, and you can leave at any time by closing your browser window. 
+                    If you do not complete the survey, your results will not be used in our research analysis. You will
+                    be given the opportunity to take periodic breaks in between questions.
+                </li>
+                <br>
+                <li>
+                    There are no expected risks to you, and there is no direct benefit because of participating in this study.
+                </li>
+                <br>
+                <li>
+                    We will not collect any identifiable information. Demographic information is optional and will be kept encrypted and password protected. 
+                    The information that you give in the study will be anonymous. Your name will not be collected or linked to your answers. 
+                    Information collected about you will not be used or shared for future research studies, but may appear anonymized in a future publication.
+                </li>
+                <br>
+                <li>
+                    The information that you provide in the study will be handled confidentially. 
+                    However, there may be circumstances where this information must be released or shared as required by law.
+                    The University of Arizona Institutional Review Board may review the research records for monitoring purposes.
+                </li>
+            </ol>
+
+            <br>
+            For questions, concerns, or complaints about the study you may contact Jacob Miller via email at <a href="mailto:jacobmiller1@arizona.edu">
+            jacobmiller1@arizona.edu</a>. <br><br>
+
+            For questions about your rights as a participant in this study or to discuss other study-related 
+            concerns or complaints with someone who is not part of the research team, you may contact 
+            the Human Subjects Protection Program Director at 520-626-8630 or online at
+            <a href="https://research.arizona.edu/compliance/human-subjects-protection-program" target="_blank" rel="noopener noreferrer">https://research.arizona.edu/compliance/human-subjects-protection-program</a>. 
+            <br><br>
+
+            By clicking "I consent" and taking part in this survey, you are agreeing to have your responses used for research purposes. 
+            <br><br>
+            <form action="{{url_for('choose')}}" id="consent">
+                <input type="submit" class="submit-button" value="I consent">
+            </form>
+        </div>
+        </div>
+</div>
+
+
+{% endblock %}
