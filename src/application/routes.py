@@ -6,17 +6,123 @@ import json
 import random
 from datetime import datetime
 from pymongo import MongoClient
+import hsne_wrapper
+import numpy as np
+
+from scipy.sparse import coo_matrix
 # from mongopass import mongopass
+
+TITLE = "Hyperbolic test site"
 
 from enum import Enum 
 SURVEY = Enum("SURVEY", ["T1", "T2", "T3"])
 
-app.secret_key = app.config.get('SESSIONPASS')
+HSNE = None
+nlevels = 3
+curlevel = 3
 
-client = MongoClient(app.config.get('MONGOPASS'))
+ffile = "blobs"
 
-db = client.riemannStudy
-riemannCollection = db.riemannCollection
+with open(f"src/application/static/data/hyperbolic/{ffile}.json", 'r') as fdata:
+    CLASSES = [d['class'] for d in json.load(fdata)]
+
+def getEuclideanData():
+    global HSNE
+
+    data = np.load(f"src/application/static/data/raw_data/{ffile}.npy")
+    npnts, ndims = data.shape
+    print(npnts, ndims)
+    HSNE = hsne_wrapper.PyHierarchicalSNE().initialize(npnts, ndims, nlevels, data.flatten())
+    X = HSNE.getEmbedding().reshape((-1,2))
+    labels = HSNE.getIdxAtScale(nlevels-1)
+
+    curlevel = nlevels
+
+    jsdata = {
+        "nodes": [{
+            'id': int(lab), 
+            'class': CLASSES[int(lab)],
+            'index': i,
+            "euclidean": {
+                    "x": float(X[i,0]), 
+                    "y": float(X[i,1])
+                }
+            } for i, lab in enumerate(labels)]
+    }
+
+    return jsdata
+
+@app.route('/drilldown', methods=["POST"])
+def drill_down():
+    global HSNE
+    
+    data = request.get_json()
+    landmarks = np.array([int(d) for d in data['landmarks']], dtype=np.uint32)
+    # data = np.arange(15,dtype=np.uint32)
+    
+    print(landmarks)
+    print(data['scale'])
+
+    rows, columns, values, idxes = HSNE.drillDownMatrix(int(data['scale'])-1, landmarks)
+
+    n = max(max(rows), max(columns)) + 1
+    mat = coo_matrix((values, (rows,columns)), shape=(n,n)).tocsr()
+    
+    # init = initialization.pca(mat)
+
+    # aff = affinity.PrecomputedAffinities(mat)
+
+    # emb = TSNEEmbedding(
+    #     init,
+    #     aff, 
+    #     # negative_gradient_method='fft',
+    #     # n_jobs=8,
+    #     verbose=True
+    # )
+
+    # print(emb)
+
+    # X1 = emb.optimize(250, exaggeration=12)
+    # X2 = X1.optimize(750,)
+
+    from sklearn.manifold import TSNE
+    P = mat.toarray()
+    tsne = TSNE(metric='precomputed',n_components=2,perplexity=30,init='random')
+    # tsne.learning_rate_ = 200.0
+    X2 = tsne.fit_transform(1-P)
+
+
+    labels = HSNE.getIdxAtScale(int(data['scale']-2))
+
+    jsdata = {
+        "nodes": [
+            {
+                "id": int(idxes[i]), 
+                "index": int(idxes[i]), 
+                "class": CLASSES[int(labels[int(idxes[i])])],
+                "euclidean": {
+                    "x": float(X2[i,0]),
+                    "y": float(X2[i,1])
+                }
+            }
+        for i in range(X2.shape[0])]
+    }
+
+    # print(jsdata)
+    # curlevel = curlevel - 1
+
+    return jsonify({"message": "Data recieved", "status": "success", "data": jsdata}), 200
+
+def getHyperbolicData():
+    with open(f"src/application/static/data/hyperbolic/{ffile}.json", 'r') as fdata:
+        data = json.load(fdata)
+
+    jsdata = {"nodes": data}
+
+    return jsdata
+
+
+
 
 IS_LIVE = app.config.get("LIVE_VERSION")
 prefix = "application" if IS_LIVE else "src/application"
@@ -54,8 +160,8 @@ vis_order = ["E", "H", "S"]
 
 def generate_id(id):
     # id += str(riemannCollection.count_documents({}))
-    # return id
-    return str(riemannCollection.count_documents({}))
+    return random.randint(0,500)
+    # return str(riemannCollection.count_documents({}))
 
 def get_graph(id):
     floc = f"src/application/static/data/{id}.json"
@@ -107,18 +213,20 @@ def unquote(url):
 @app.route('/test_type')
 def index():
     session["test_type"] = 0
-    return render_template('consent.html', title='University of Arizona Network Visualization Survey', data=None)
+    return render_template('choose.html', title=TITLE, data=None)
 
 @app.route("/test_type<v1>")
 def test_type(v1):
     print(v1)
-    return render_template('consent.html', title='University of Arizona Network Visualization Survey', data=None)
+    return render_template('consent.html', title=TITLE, data=None)
 
 
 @app.route('/choose')
 def choose():
     geom = ["E", "H", "S"]
-    n = int(riemannCollection.count_documents({})) % 3
+    # n = int(riemannCollection.count_documents({})) % 3
+    n = random.randint(0,2)
+    print(request.form.get("id"))
     return redirect(url_for("user_index_form", id=geom[n]))
     #return render_template('choose.html', title='non-Euclidean Graph Survey Homepage (pilot!)', data=None)
 
@@ -136,7 +244,7 @@ def homepage(data):
         "geom": session["current_geom"], 
         "first_time": True if session["geom_num"] == 0 else False
     }
-    return render_template("homepage.html", title="University of Arizona Network Visualization Survey", data=data, id=id)
+    return render_template("homepage.html", title=TITLE, data=data, id=id)
 
 @app.route('/test<id>_<q>') 
 def view(id, q):
@@ -147,7 +255,7 @@ def view(id, q):
         gdata["geom"] = session["current_geom"]
         print(f"geom number is {session['geom_num']}")
         return render_template("visualization.html", 
-            title='University of Arizona Network Visualization Survey', 
+            title=TITLE, 
             data=gdata, 
             id=id, 
             q_id=question["question_id"], 
@@ -161,7 +269,7 @@ def hyperbolic():
     gdata, question = get_question(0, 0)
     gdata["geom"] = "H"
     return render_template("visualization.html", 
-        title="University of Arizona Network Visualization Survey",
+        title=TITLE,
         data=gdata,
         id="test-hyperbolic",
         q_id=0,
@@ -174,7 +282,7 @@ def spherical():
     gdata, question = get_question(0, 0)
     gdata["geom"] = "S"
     return render_template("visualization.html", 
-        title="University of Arizona Network Visualization Survey",
+        title=TITLE,
         data=gdata,
         id="test-spherical",
         q_id=0,
@@ -192,7 +300,7 @@ def euclidean(qid, ind):
         gdata, question = get_question(0, 0)
     gdata["geom"] = "E"
     return render_template("visualization.html", 
-        title="University of Arizona Network Visualization Survey",
+        title=TITLE,
         data=gdata,
         id="test-euclidean",
         q_id=qid,
@@ -203,7 +311,7 @@ def euclidean(qid, ind):
 
 @app.route('/<id>')
 def user_index(id):
-    if   "E" in id:
+    if "E" in id:
         return redirect(url_for("euc_view_home", data=True, id=id))
     elif "S" in id:
         return redirect(url_for("sph_view_home", data=True, id=id))
@@ -240,13 +348,27 @@ def full_test():
         "feedback": dict(), 
         "q_group": session["q_group"]
     }
-    riemannCollection.insert_one(new_val)   
+    # riemannCollection.insert_one(new_val)   
 
     return redirect(url_for("homepage", data=True, id=user_id)) 
 
 @app.route("/index/")
 def user_index_form():
     id = request.args.get('id')
+
+    if id == "E": 
+        data = getEuclideanData()
+    elif id == "H":
+        data = getHyperbolicData()
+
+    return render_template("visualization.html", 
+        title=TITLE, 
+        data={"geom": id} | data, 
+        id=id, 
+        q_id=None, 
+        question=None,
+        progress=[1, 3 * NUM_QUESTIONS]
+    )    
 
     user_id = generate_id(id)
     session["user_id"] = user_id
@@ -274,7 +396,7 @@ def user_index_form():
         "feedback": dict(), 
         "q_group": session["q_group"]
     }
-    riemannCollection.insert_one(new_val)
+    # riemannCollection.insert_one(new_val)
 
     if is_valid(id):
         return redirect(url_for("homepage", data=True, id=user_id))
@@ -386,12 +508,13 @@ def store_likert_feedback(id):
     if request.method == 'POST':
         feedback = request.form.get("final_answers")
         if (id != "test123" and id != "full_test"):
-            doc = riemannCollection.find_one({'id': id})
-            doc["likert-feedback"][vis_order[ session["geom_order"][session["geom_num"]-1] ]] = feedback
-            riemannCollection.update_one(
-                {'id': id},
-                {"$set": doc}
-            )
+            pass
+            # doc = riemannCollection.find_one({'id': id})
+            # doc["likert-feedback"][vis_order[ session["geom_order"][session["geom_num"]-1] ]] = feedback
+            # riemannCollection.update_one(
+            #     {'id': id},
+            #     {"$set": doc}
+            # )
         print(session["geom_num"])
         if session["geom_num"] >= 3:
             session["test_status"] = True
@@ -410,12 +533,13 @@ def store_feedback(id):
     if request.method == 'POST':
         feedback = request.form.get("responses")
         if (id != "test123" and id != "full_test"):
-            doc = riemannCollection.find_one({'id': id})
-            doc["feedback"] = feedback
-            riemannCollection.update_one(
-                {'id': id},
-                {"$set": doc}
-            )
+            pass
+            # doc = riemannCollection.find_one({'id': id})
+            # doc["feedback"] = feedback
+            # riemannCollection.update_one(
+            #     {'id': id},
+            #     {"$set": doc}
+            # )
 
         return redirect(url_for("end", id=id))
     return redirect(url_for("index"), code=307)
@@ -426,13 +550,13 @@ def end():
     print(session.keys())
     id = request.args.get('id')
     if (len(session.keys()) != 0) and (session["test_status"]):
-        doc = riemannCollection.find_one({'id': id})
-        doc["completed_test"] = session["test_status"]
-        doc["time_end"] = datetime.isoformat(datetime.now())
-        riemannCollection.update_one(
-            {'id': id}, 
-            {"$set": doc}
-        )
+        # doc = riemannCollection.find_one({'id': id})
+        # doc["completed_test"] = session["test_status"]
+        # doc["time_end"] = datetime.isoformat(datetime.now())
+        # riemannCollection.update_one(
+        #     {'id': id}, 
+        #     {"$set": doc}
+        # )
         session.clear()
     return render_template("end.html", title='End of Study')
 
@@ -440,15 +564,15 @@ def update_db_entry(id, q_id, answers, interactions):
     import time 
     start = time.perf_counter()
 
-    doc = riemannCollection.find_one({"id": id})
+    # doc = riemannCollection.find_one({"id": id})
     
-    doc["results"][ session["current_geom"] ][q_id] = answers
-    doc["interaction_list"][ session["current_geom"] ][q_id] = interactions
+    # doc["results"][ session["current_geom"] ][q_id] = answers
+    # doc["interaction_list"][ session["current_geom"] ][q_id] = interactions
 
-    riemannCollection.update_one(
-        {"id": id}, 
-        {"$set": doc}
-    )
+    # riemannCollection.update_one(
+    #     {"id": id}, 
+    #     {"$set": doc}
+    # )
 
     end = time.perf_counter()
 

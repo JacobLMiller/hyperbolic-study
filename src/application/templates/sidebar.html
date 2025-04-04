@@ -1,8 +1,10 @@
 <div class="col-3" id="sidebar">
     <div class="w3-light-grey w3-round" style="border: 1px solid black;">
         <div id="progressbar" class="w3-container w3-round w3-blue" style="width:0%; height: 30px;"></div>
-        <div id="progressbar-text" style="width: 100%; position: absolute; transform: translate(20px, -25px);"></div>
+        <div id="progressbar-text" style="width: 440px; position: absolute; transform: translate(20px, -25px);"></div>
       </div>    
+    <div id="drillcontainer"></div>
+    <div id="popstack" style="display:none;"></div>
     <div class="question" id="question-form"></div>
     <form class="question-options" id="question-options-form" method="POST">
     </form>
@@ -10,6 +12,6 @@
     <br>
     <div id="sidebar-info">
         {% include 'interactions.html' %}
-        {% include 'definitions.html' %}
+        <!-- {% include 'definitions.html' %} -->
     </div>        
 </div>

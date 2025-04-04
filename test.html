@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyperbolic Poincare Tiling - Three.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body style="margin:0; overflow:hidden;">
+    <script>
+        // Setup Three.js scene
+        let scene = new THREE.Scene();
+        let camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+        let renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Plane geometry to apply the shader
+        let geometry = new THREE.PlaneGeometry(2, 2);
+
+        // Shader material
+        let material = new THREE.ShaderMaterial({
+            uniforms: {
+                iTime: { value: 0 },  // Time for animation
+                iResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+            },
+            fragmentShader: 
+            `
+                uniform float iTime;
+                uniform vec2 iResolution;
+
+                // Voronoi function
+                vec2 hash(vec2 p) {
+                    p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
+                    return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
+                }
+
+                float noise(vec2 p) {
+                    vec2 i = floor(p);
+                    vec2 f = fract(p);
+                    vec2 u = f*f*(3.0-2.0*f);
+                    return mix(mix(dot(hash(i + vec2(0.0, 0.0)), f - vec2(0.0, 0.0)),
+                                   dot(hash(i + vec2(1.0, 0.0)), f - vec2(1.0, 0.0)), u.x),
+                               mix(dot(hash(i + vec2(0.0, 1.0)), f - vec2(0.0, 1.0)),
+                                   dot(hash(i + vec2(1.0, 1.0)), f - vec2(1.0, 1.0)), u.x), u.y);
+                }
+
+                vec2 voronoi(vec2 p) {
+                    vec2 g = floor(p);
+                    vec2 f = fract(p);
+                    float minDist = 1.0;
+                    vec2 minPoint;
+                    
+                    for(int y = -1; y <= 1; y++) {
+                        for(int x = -1; x <= 1; x++) {
+                            vec2 lattice = vec2(x, y);
+                            vec2 offset = hash(g + lattice);
+                            vec2 cellPoint = lattice + offset - f;
+                            float dist = dot(cellPoint, cellPoint);
+                            
+                            if(dist < minDist) {
+                                minDist = dist;
+                                minPoint = offset;
+                            }
+                        }
+                    }
+                    return vec2(minPoint.x, minDist);
+                }
+
+                void main() {
+                    vec2 xy = (2.0 * gl_FragCoord.xy - iResolution.xy) / iResolution.y;
+
+                    if(dot(xy, xy) > 1.0) {
+                        gl_FragColor = vec4(0.0);
+                    } else {
+                        // vec2 v = voronoi(xy);
+                        // vec3 color = 0.5 + 0.5 * sin(vec3(v.x + 1.0) * vec3(3.0, 6.0, 9.0) + vec3(2.0, 4.0, 6.0));
+                        // color = pow(color, vec3(2.0 * v.y));
+                        gl_FragColor = vec4(255.0);
+                    }
+                }
+            `
+        });
+
+        let mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+        camera.position.z = 1;
+
+        // Animate the shader
+        function animate(time) {
+            material.uniforms.iTime.value = time * 0.001; // Convert to seconds
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+
+        animate(0);
+
+        // Handle window resizing
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            material.uniforms.iResolution.value.set(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

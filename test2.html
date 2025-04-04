@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Efficient Circle Rendering - Texture Lookup</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body style="margin:0; overflow:hidden;">
+    <script>
+        let scene = new THREE.Scene();
+        let camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+        let renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const circleCount = 1000; // Number of circles
+        const textureSize = Math.ceil(Math.sqrt(circleCount)); // Texture size
+
+        // Create a Uint8Array texture (0-255 range)
+        const data = new Uint8Array(textureSize * textureSize * 4);
+        for (let i = 0; i < circleCount; i++) {
+            let x = Math.floor((Math.random() * 255)); // Convert position to 0-255 range
+            let y = Math.floor((Math.random() * 255));
+            let radius = Math.floor(Math.random() * 20 + 5); // Radius in range [5, 25]
+
+            let index = i * 4;
+            data[index] = x;      // X coordinate
+            data[index + 1] = y;  // Y coordinate
+            data[index + 2] = radius; // Radius
+            data[index + 3] = 255; // Unused (kept as max value)
+        }
+
+        // Create texture from data
+        let texture = new THREE.DataTexture(
+            data,
+            textureSize,
+            textureSize,
+            THREE.RGBAFormat,
+            THREE.UnsignedByteType
+        );
+        texture.needsUpdate = true;
+
+        // Shader Material
+        let material = new THREE.ShaderMaterial({
+            uniforms: {
+                iResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+                iTime: { value: 0 }, // For animation
+                circleTexture: { value: texture }, // The data texture
+                textureSize: { value: textureSize },
+                circleCount: { value: circleCount }
+            },
+            fragmentShader: `
+                uniform vec2 iResolution;
+                uniform float iTime;
+                uniform sampler2D circleTexture;
+                uniform float textureSize;
+                uniform float circleCount;
+
+                vec4 getCircleData(float index) {
+                    float texX = mod(index, textureSize) / textureSize;
+                    float texY = floor(index / textureSize) / textureSize;
+                    return texture2D(circleTexture, vec2(texX, texY)); // Fetch circle data
+                }
+
+                void main() {
+                    vec2 uv = gl_FragCoord.xy / iResolution.xy;  // Normalized screen coords
+                    uv = uv * 2.0 - 1.0; // Convert to [-1,1] range
+                    uv *= iResolution.x / iResolution.y; // Maintain aspect ratio
+
+                    float minDist = 1.0;
+                    vec3 color = vec3(0.0);
+
+                    // Loop through circles (sample from texture)
+                    for (float i = 0.0; i < 1000.0; i++) {
+                        if (i >= circleCount) break; // Prevent extra iterations
+
+                        vec4 circle = getCircleData(i);
+
+                        // Decode values from [0,255] range
+                        vec2 pos = (circle.xy / 255.0) * 2.0 - 1.0;
+                        pos *= 0.8; // Scale to fit screen
+                        float radius = (circle.z / 255.0) * 0.1 + 0.02; // Scale radius
+
+                        // Moving circles (example: oscillating y-position)
+                        pos.y += sin(iTime * 0.5 + i) * 0.01;
+
+                        float d = length(uv - pos) - radius;
+                        minDist = min(minDist, d);
+                    }
+
+                    // Smooth edges using anti-aliasing
+                    float alpha = smoothstep(0.02, 0.0, minDist);
+                    gl_FragColor = vec4(vec3(1.0), alpha);
+                }
+            `
+        });
+
+        let geometry = new THREE.PlaneGeometry(2, 2);
+        let mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+        camera.position.z = 1;
+
+        function animate(time) {
+            material.uniforms.iTime.value = time * 0.001; // Update time
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+        animate(0);
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            material.uniforms.iResolution.value.set(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

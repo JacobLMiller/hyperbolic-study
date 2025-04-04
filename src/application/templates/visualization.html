@@ -4,7 +4,8 @@
 <div class="container-fluid" id="main-body">
        <div class="row" id="main">
             {% include 'sidebar.html' %}
-            <div class="col-9" id="visualization-container">
+            <div class="col-9" id="visualization-container" style="position: relative;">
+                <div id="loading"></div>
             </div>
         </div>
 </div>
@@ -29,8 +30,8 @@
 
         var data = {{data | tojson}};
         var userID = "{{id}}";
-        var questionID = "{{q_id}}";
-        var question_obj = {{question | tojson}};
+        // var questionID = "{{q_id}}";
+        // var question_obj = {{question | tojson}};
 
         let progress = {{progress | tojson}};
         let progress_bar = document.getElementById("progressbar");
@@ -43,7 +44,7 @@
             svg = d3.select("#visualization-container").append("svg")
                     .attr("id", "mainVis")
                     .style("border", "3px solid black");            
-            vis = new EuclideanVis("#mainVis", data.nodes, data.links, data.graph.central_node);
+            vis = new EuclideanVis("#mainVis", data.nodes, null, null);
         }
         else if(data.geom === "S"){
             svg = d3.select("#visualization-container").append("svg")
@@ -54,7 +55,7 @@
             svg = d3.select("#visualization-container").append("div")
                     .attr("id", "hyperbolic-canvas")
                     .style("height", `${800}px`);
-            vis = new HyperbolicVis("#hyperbolic-canvas", data.nodes, data.links, data.graph.central_node);
+            vis = new HyperbolicVis("#hyperbolic-canvas", data.nodes, null, null);
         }
         else{
             document.getElementById("visualization-container").innerHTML = "There has been a critical error, please contact the survey organizers.";
@@ -69,35 +70,37 @@
         let sidebarTop = sidebar.getBoundingClientRect().top;
         let sidebarBottom = svg.node().getBoundingClientRect().bottom;
         sidebar.style.height = `${400}px`;
+
+        vis.interact();
         
 
         //interactions are setup here too
-        setupQuestionAndInteractions(vis, question_obj, questionID);
+        // setupQuestionAndInteractions(vis, question_obj, questionID);
 
         //Would like to tuck this away, but Flask functions are not interpreted in static js file.
-        let dataForm = document.getElementById("submit-button");
-        dataForm.addEventListener("click", (e) => {
-            e.preventDefault();
-            if (!document.getElementById("question-form").value) {
-                alert('Please select an answer before you submit!')
-            } else {
-                vis.appendInteraction("end");
-                const userData = new FormData();
-                userData.append("id", userID);
-                userData.append("q", questionID);
-                userData.append("a", document.getElementById("question-form").value);
-                userData.append("j", vis.dumpJson());
-                let url = `{{ url_for('next_question') }}`
-                fetch(url, {
-                    method: 'POST',
-                    body: userData
-                })
-                .then((response) => {
-                    window.location.href = response.url;
-                });
-            }
+        // let dataForm = document.getElementById("submit-button");
+        // dataForm.addEventListener("click", (e) => {
+        //     e.preventDefault();
+        //     if (!document.getElementById("question-form").value) {
+        //         alert('Please select an answer before you submit!')
+        //     } else {
+        //         vis.appendInteraction("end");
+        //         const userData = new FormData();
+        //         userData.append("id", userID);
+        //         userData.append("q", questionID);
+        //         userData.append("a", document.getElementById("question-form").value);
+        //         userData.append("j", vis.dumpJson());
+        //         let url = `{{ url_for('next_question') }}`
+        //         fetch(url, {
+        //             method: 'POST',
+        //             body: userData
+        //         })
+        //         .then((response) => {
+        //             window.location.href = response.url;
+        //         });
+        //     }
 
-        });
+        // });
 
     });
 

@@ -58,6 +58,12 @@ function mobius(z, transform){
     );
 }
 
+function cartToPolar(v){
+    let r = l2_norm_hyperbol(v);
+    let theta = Math.atan2(v.y,v.x);
+    return {'r': r, 'theta': theta};
+}
+
 
 function lobachevskyToPolar(pt){
     let coshx = cosh(pt.x); 
@@ -77,7 +83,7 @@ function polarToLobachevsky(pt){
 
 class HyperbolicVis {
     #nodeRadiusLarge = 0.15;
-    #nodeRadiusSmall = 0.05;
+    #nodeRadiusSmall = 0.02;
     #stepSize = 10;
 
     #colors = ["#4e79a7","#f28e2c","#e15759","#76b7b2","#59a14f","#edc949","#af7aa1","#ff9da7","#9c755f","#bab0ab"];
@@ -85,6 +91,10 @@ class HyperbolicVis {
 
     constructor(divId,nodes,links, center_node) {
         var canvas = HyperbolicCanvas.create(divId);
+        var selection = d3.select(canvas);
+        console.log(canvas);
+        console.log(selection);
+        // selection.getContext("webgl")
         var defaultProperties = {
             lineJoin: 'round',
             lineWidth: 1,
@@ -94,7 +104,14 @@ class HyperbolicVis {
         canvas.setContextProperties(defaultProperties);
         this.hcanvas = canvas;
 
-        [this.nodes, this.links, this.idMap] = initGraph(nodes,links);
+        this.nodes = nodes;
+        this.links = [];
+
+        this.idMap = new Map();
+        this.nodes.forEach((n,index) => {
+            n.id = index;
+            this.idMap.set(n.id, index)
+        });
 
         this.initialHeight = this.hcanvas.getUnderlayElement().offsetHeight;
         
@@ -143,11 +160,14 @@ class HyperbolicVis {
         return JSON.stringify(this.interactions);
     }
 
+
     process(){
-        this.nodes.forEach(n => {
-            n.polar = lobachevskyToPolar(n.hyperbolic);
+        this.nodes.forEach((n,i) => {
+            // n.polar = lobachevskyToPolar(n.hyperbolic);
+            n.id = i;
+            n.polar = cartToPolar(n);
             n.hpnt = HyperbolicCanvas.Point
-                .givenHyperbolicPolarCoordinates(n.polar.r, n.polar.theta);
+                .givenEuclideanPolarCoordinates(n.polar.r, n.polar.theta);
             n.complex = complex(n.hpnt.getX(), n.hpnt.getY());
 
             n.hovered = HoverState.NOT_HOVERED;
@@ -179,9 +199,11 @@ class HyperbolicVis {
         this.nodes.forEach(n => {
             ctx.strokeStyle = "black";
             ctx.lineWidth = 1;
+            // ctx.globalAlpha = 0.25;
             let radius = this.#nodeRadiusSmall;
             if (this.hoverNodes.includes(`node_${n.id}`)){
-                ctx.fillStyle = "#FE6100"
+                // console.log(n.class)
+                ctx.fillStyle = "#FE6100";
                 ctx.lineWidth = 3;
                 radius = this.#nodeRadiusLarge;
             } else {
@@ -190,7 +212,7 @@ class HyperbolicVis {
                 }else if(n.hovered === HoverState.HOVER_NEIGHBOR){
                     ctx.fillStyle = "#DC267F";
                 }else{
-                    ctx.fillStyle = "#648FFF";
+                    ctx.fillStyle = this.#colors[n.class];
                 }
             }
             
@@ -199,7 +221,7 @@ class HyperbolicVis {
                 n.hpnt, radius / this.curScale.a
             );
 
-            this.hcanvas.fillAndStroke(
+            this.hcanvas.fill(
                 this.hcanvas.pathForHyperbolic(n.hcircle)
             );
         });
@@ -332,7 +354,7 @@ class HyperbolicVis {
         
         if(is_highlight){
             node.hovered = HoverState.HOVERED;
-            node.neighbors.forEach(v => this.nodes[v].hovered = HoverState.HOVER_NEIGHBOR);
+            // node.neighbors.forEach(v => this.nodes[v].hovered = HoverState.HOVER_NEIGHBOR);
         }
 
         this.checkToAddHoverInteraction(is_highlight, node);            
@@ -366,7 +388,7 @@ class HyperbolicVis {
                 this.curMove = newMove;
             }
             else{
-                this.highlightOverlap(e);
+                // this.highlightOverlap(e);
             }
         }
       

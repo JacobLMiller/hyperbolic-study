@@ -7,11 +7,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <script type="text/javascript">
-    window.history.forward();
-    function disableBackButton() {
-        window.history.forward();
-    }
-    setTimeout("disableBackButton()", 0);
+    // window.history.forward();
+    // function disableBackButton() {
+    //     window.history.forward();
+    // }
+    // setTimeout("disableBackButton()", 0);
     window.onmouseup = event => event.preventDefault();
   </script>
 
@@ -41,7 +41,7 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">{{title}}</a>
-      <img src="{{url_for('static', filename='img/ua_logo.png') }}" height="50px">
+      <img src="{{url_for('static', filename='img/tum_logo.png') }}" height="50px">
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler"
         aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>

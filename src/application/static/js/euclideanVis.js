@@ -1,3 +1,5 @@
+//TODO second view for higher level 
+
 function getFloatsFromString(s){
     /*
     Given string s, returns a list of substrings intrepretable as floating point numbers. 
@@ -11,7 +13,7 @@ function getFloatsFromString(s){
 
 class EuclideanVis {
     #nodeRadiusLarge = 15;
-    #nodeRadiusSmall = 10;
+    #nodeRadiusSmall = 5;
 
     #colors = ["#4e79a7","#f28e2c","#e15759","#76b7b2","#59a14f","#edc949","#af7aa1","#ff9da7","#9c755f","#bab0ab"];
     #margin = {top: 15, bottom: 15, left:15, right:15};
@@ -19,8 +21,19 @@ class EuclideanVis {
     constructor(svgID, nodes, links, center_node) {
         this.svgID = svgID.substring(1);
         this.svg = d3.select(svgID);
+
+        this.loading = document.getElementById("loading");
         
-        [this.nodes, this.links, this.idMap] = initGraph(nodes,links);
+        this.curScale = 3;
+
+        this.nodes = nodes;
+
+        this.idMap = new Map();
+        this.nodes.forEach((n,index) => {
+            n.id = n.id.toString();
+            this.idMap.set(n.id, index)
+        });
+        // [this.nodes, this.links, this.idMap] = initGraph(nodes,links);
 
         this.layer1 = this.svg.append("g");
         this.width = this.svg.node().getBoundingClientRect().width;
@@ -34,8 +47,62 @@ class EuclideanVis {
         this.interactions = new Array();
         this.appendInteraction("start");
 
-        this.center_node = center_node;
+        this.center_node = null;
 
+        this.selected = [];
+
+        this.stack    = [];
+
+        let container = document.getElementById("drillcontainer");
+        if (container) {
+            const button = Object.assign(document.createElement("button"), {
+                textContent: "drill down",
+                onclick: () => this.drillDown()
+            });
+            container.appendChild(button);
+        }
+        container = document.getElementById("popstack");
+        if (container) {
+            const button = Object.assign(document.createElement("button"), {
+                textContent: "Go back",
+                onclick: () => this.popStack()
+            });
+            container.appendChild(button);
+        }
+
+        this.loading.style.left = `${this.width / 2}px`;
+        this.loading.style.top = `${this.height / 2}px`;
+
+
+    }
+
+    drillDown(){
+        let landmarks = this.layer1.selectAll(".hover-node").data().map((d,i) => d.index);
+        let ddata = {"landmarks": landmarks, "scale": this.curScale};
+        if (this.curScale > 1){
+            this.stack.push(this.nodes);
+            this.loading.classList.add('display');
+            fetch('/drilldown', {
+                'method': 'POST',
+                'headers': {"Content-Type": 'application/json'},
+                'body': JSON.stringify(ddata)
+            })
+            .then(response => { return response.json()})
+            .then(data => {
+                this.nodes = data.data.nodes;
+                this.process();
+                this.draw();
+                this.curScale -= 1;
+                this.loading.classList.remove("display");
+            })
+            .catch(error => console.error(error));
+        }
+    }
+
+    popStack(){
+        this.nodes = this.stack.pop();
+        this.curScale += 1;
+        this.draw();        
     }
     
     appendInteraction(e){
@@ -62,40 +129,32 @@ class EuclideanVis {
             d.y = yscale(d.euclidean.y);
             d.r = this.#nodeRadiusSmall;
         });
+
+        console.log(this.nodes)
         
     }
 
     draw(){
-
-        this.layer1.selectAll(".links")
-            .data(this.links, d => d.source.id + d.target.id)
-            .join(
-                enter => enter.append("line")
-                    .attr("class", "links default-link")
-                    // .attr("stroke", "grey")
-                    // .attr("stroke-width", 2)
-                    .attr("x1", d => d.source.x)
-                    .attr("y1", d => d.source.y)
-                    .attr("x2", d => d.target.x)
-                    .attr("y2", d => d.target.y), 
-                update => update, 
-                exit => exit)
-            .attr("id", d => {
-                return "link_" + d.source.id + "_" + d.target.id;
-            });
-
+        if(this.stack.length > 0){
+            document.getElementById("popstack").style.display = 'block';
+        }else{
+            document.getElementById("popstack").style.display = 'none';
+        }
         this.layer1.selectAll(".nodes")
             .data(this.nodes, d => d.id)
             .join(
                 enter => enter.append("circle")
-                    .attr("class", "nodes default-node")
+                    .attr("class", "nodes")
                     .attr("stroke", "black")
-                    // .attr("fill", this.#colors[0])
+                    .attr("fill", d => d.class ? this.#colors[d.class] : this.#colors[0])
                     .attr("cx", d => d.x)
                     .attr("cy", d => d.y)
                     .attr("r", d => d.r),
-                update => update, 
-                exit => exit 
+                update => update
+                    .attr("cx", d => d.x)
+                    .attr("cy", d => d.y)
+                    .attr("fill", d => d.class ? this.#colors[d.class] : this.#colors[0]), 
+                exit => exit.remove()
             )
             .attr("id", d => {
                 return "node_" + d.id;
@@ -127,12 +186,6 @@ class EuclideanVis {
                 if (!id_list.includes("node_" + d.id)) {
                     d3.select(this).attr("class", "nodes hover-node"); //function(){} syntax has a different "this" which is the svg element attached.
                 }
-                
-                tthis.layer1.selectAll(".nodes").filter(n => d.neighbors.has(n.id) && !id_list.includes("node_" + n.id))
-                    .attr("class", "nodes hover-neighbor-node"); //We added an adjacency list data structure in preprocessing to make this efficient. 
-
-                tthis.layer1.selectAll(".links").filter(e => e.source.id === d.id || e.target.id === d.id)
-                    .attr("class", "links hover-link");
 
                 tthis.appendInteraction("hover");
             })
@@ -140,8 +193,6 @@ class EuclideanVis {
                 this.layer1.selectAll(".nodes").filter(n => !id_list.includes("node_" + n.id))
                     .attr("class", "nodes default-node");
                 
-                this.layer1.selectAll(".links")
-                    .attr("class", "links default-link");
             });
     }
 
@@ -196,11 +247,29 @@ class EuclideanVis {
         this.makeCenter(xmove-c_node.x, ymove-c_node.y, 1, 0);     
     }
 
+    addBrush(){
+        const brush = d3.brush()
+            .extent([[0,0], [this.width, this.height]])
+            .on("start", () => console.log("brush start"))
+            .on("end", () => console.log("brush end"))
+            .on("brush", e => {
+                if (!e.selection) return;
+
+                const [[x0,y0], [x1,y1]] = e.selection;
+                this.layer1.selectAll(".nodes")
+                    .classed("hover-node", d => {
+                        return x0 <= d.x && d.x <= x1 && y0 <= d.y && d.y <= y1;
+                });
+            });
+        this.svg.call(brush);
+    }
+
     interact(id_list){
         this.layer1.on("click", () => {
             this.appendInteraction("pan");
         })
-        this.addZoom();
+        // this.addZoom();
+        this.addBrush();
         this.addHover(id_list);
         this.addDblClick();
         this.addResetButton();
