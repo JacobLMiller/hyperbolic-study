@@ -10,6 +10,8 @@ import hsne_wrapper
 import numpy as np
 from flask import g 
 import gc
+import os
+
 
 from scipy.sparse import coo_matrix
 # from mongopass import mongopass
@@ -25,15 +27,25 @@ curlevel = 3
 
 ffile = "blobs"
 
+IS_LIVE = True
+prefix = "application" if IS_LIVE else "src/application"
 
 
-with open(f"application/static/data/hyperbolic/{ffile}.json", 'r') as fdata:
-    CLASSES = [d['class'] for d in json.load(fdata)]
 
-def getEuclideanData():
+all_files = [s.replace(".json", "") for s in os.listdir(f"{prefix}/static/data/hyperbolic")]
+
+CLASSES = list()
+
+def getEuclideanData(ffile="blobs"):
+    global CLASSES
+
     if not hasattr(g, 'hsne'):
         print("Creating new HSNE instance for this request....")
-        g.hsne = create_hsne_instance()
+        g.hsne = create_hsne_instance(ffile)
+
+
+    with open(f"{prefix}/static/data/hyperbolic/{ffile}.json", 'r') as fdata:
+        CLASSES = [d['class'] for d in json.load(fdata)]
 
     X = g.hsne.getEmbedding().reshape((-1,2))
     labels = g.hsne.getIdxAtScale(nlevels-1)
@@ -51,6 +63,8 @@ def getEuclideanData():
                 }
             } for i, lab in enumerate(labels)]
     }
+
+    jsdata['files'] = all_files
 
     return jsdata
 
@@ -83,23 +97,6 @@ def drill_down():
 
     n = max(max(rows), max(columns)) + 1
     mat = coo_matrix((values, (rows,columns)), shape=(n,n)).tocsr()
-    print(mat)
-    # init = initialization.pca(mat)
-
-    # aff = affinity.PrecomputedAffinities(mat)
-
-    # emb = TSNEEmbedding(
-    #     init,
-    #     aff, 
-    #     # negative_gradient_method='fft',
-    #     # n_jobs=8,
-    #     verbose=True
-    # )
-
-    # print(emb)
-
-    # X1 = emb.optimize(250, exaggeration=12)
-    # X2 = X1.optimize(750,)
 
     from sklearn.manifold import TSNE
     P = mat.toarray()
@@ -127,24 +124,20 @@ def drill_down():
         for i in range(X2.shape[0])]
     }
 
+    jsdata['files'] = all_files
     # print(jsdata)
     # curlevel = curlevel - 1
 
     return jsonify({"message": "Data recieved", "status": "success", "data": jsdata}), 200
 
-def getHyperbolicData():
-    with open(f"application/static/data/hyperbolic/{ffile}.json", 'r') as fdata:
+
+def getHyperbolicData(ffile="blobs"):
+    with open(f"{prefix}/static/data/hyperbolic/{ffile}.json", 'r') as fdata:
         data = json.load(fdata)
 
-    jsdata = {"nodes": data}
+    jsdata = {"nodes": data, "files": all_files}
 
     return jsdata
-
-
-
-
-IS_LIVE = app.config.get("LIVE_VERSION")
-prefix = "application" if IS_LIVE else "src/application"
 
 with open("application/static/data/test-questions-2.json", "r") as qdata:
     Questions = json.load(qdata)
@@ -238,6 +231,22 @@ def index():
 def test_type(v1):
     print(v1)
     return render_template('consent.html', title=TITLE, data=None)
+
+@app.route("/gethdata")
+def gethdata():
+    value = request.args.get("value")
+    
+    data = getHyperbolicData(value)
+
+    return jsonify(data)
+
+@app.route("/getedata")
+def getedata():
+    value = request.args.get("value")
+    
+    data = getEuclideanData(value)
+
+    return jsonify(data)
 
 
 @app.route('/choose')
