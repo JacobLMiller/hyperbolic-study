@@ -26,13 +26,7 @@ class EuclideanVis {
         
         this.curScale = 3;
 
-        this.nodes = nodes;
 
-        this.idMap = new Map();
-        this.nodes.forEach((n,index) => {
-            n.id = n.id.toString();
-            this.idMap.set(n.id, index)
-        });
         // [this.nodes, this.links, this.idMap] = initGraph(nodes,links);
 
         this.layer1 = this.svg.append("g");
@@ -74,6 +68,16 @@ class EuclideanVis {
         this.loading.style.top = `${this.height / 2}px`;
 
 
+    }
+
+    addData(nodes,links){
+        this.nodes = nodes;
+
+        this.idMap = new Map();
+        this.nodes.forEach((n,index) => {
+            n.id = n.id.toString();
+            this.idMap.set(n.id, index)
+        });
     }
 
     drillDown(){
@@ -146,14 +150,14 @@ class EuclideanVis {
                 enter => enter.append("circle")
                     .attr("class", "nodes")
                     .attr("stroke", "black")
-                    .attr("fill", d => d.class ? this.#colors[d.class] : this.#colors[0])
+                    .attr("fill", d => d.class ? this.#colors[Math.abs(d.class)] : this.#colors[0])
                     .attr("cx", d => d.x)
                     .attr("cy", d => d.y)
                     .attr("r", d => d.r),
                 update => update
                     .attr("cx", d => d.x)
                     .attr("cy", d => d.y)
-                    .attr("fill", d => d.class ? this.#colors[d.class] : this.#colors[0]), 
+                    .attr("fill", d => d.class ? this.#colors[Math.abs(d.class)] : this.#colors[0]), 
                 exit => exit.remove()
             )
             .attr("id", d => {

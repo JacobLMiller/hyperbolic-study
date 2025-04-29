@@ -8,6 +8,7 @@ from datetime import datetime
 from pymongo import MongoClient
 import hsne_wrapper
 import numpy as np
+import os
 
 from scipy.sparse import coo_matrix
 # from mongopass import mongopass
@@ -23,11 +24,17 @@ curlevel = 3
 
 ffile = "blobs"
 
-with open(f"src/application/static/data/hyperbolic/{ffile}.json", 'r') as fdata:
-    CLASSES = [d['class'] for d in json.load(fdata)]
+all_files = [s.replace(".json", "") for s in os.listdir("src/application/static/data/hyperbolic")]
 
-def getEuclideanData():
+CLASSES = list()
+
+
+def getEuclideanData(ffile='blobs'):
     global HSNE
+    global CLASSES
+
+    with open(f"src/application/static/data/hyperbolic/{ffile}.json", 'r') as fdata:
+        CLASSES = [d['class'] for d in json.load(fdata)]
 
     data = np.load(f"src/application/static/data/raw_data/{ffile}.npy")
     npnts, ndims = data.shape
@@ -50,6 +57,8 @@ def getEuclideanData():
             } for i, lab in enumerate(labels)]
     }
 
+    jsdata['files'] = all_files
+
     return jsdata
 
 @app.route('/drilldown', methods=["POST"])
@@ -67,23 +76,6 @@ def drill_down():
 
     n = max(max(rows), max(columns)) + 1
     mat = coo_matrix((values, (rows,columns)), shape=(n,n)).tocsr()
-    
-    # init = initialization.pca(mat)
-
-    # aff = affinity.PrecomputedAffinities(mat)
-
-    # emb = TSNEEmbedding(
-    #     init,
-    #     aff, 
-    #     # negative_gradient_method='fft',
-    #     # n_jobs=8,
-    #     verbose=True
-    # )
-
-    # print(emb)
-
-    # X1 = emb.optimize(250, exaggeration=12)
-    # X2 = X1.optimize(750,)
 
     from sklearn.manifold import TSNE
     P = mat.toarray()
@@ -108,16 +100,17 @@ def drill_down():
         for i in range(X2.shape[0])]
     }
 
+    jsdata['files'] = all_files
     # print(jsdata)
     # curlevel = curlevel - 1
 
     return jsonify({"message": "Data recieved", "status": "success", "data": jsdata}), 200
 
-def getHyperbolicData():
+def getHyperbolicData(ffile="blobs"):
     with open(f"src/application/static/data/hyperbolic/{ffile}.json", 'r') as fdata:
         data = json.load(fdata)
 
-    jsdata = {"nodes": data}
+    jsdata = {"nodes": data, "files": all_files}
 
     return jsdata
 
@@ -219,6 +212,22 @@ def index():
 def test_type(v1):
     print(v1)
     return render_template('consent.html', title=TITLE, data=None)
+
+@app.route("/gethdata")
+def gethdata():
+    value = request.args.get("value")
+    
+    data = getHyperbolicData(value)
+
+    return jsonify(data)
+
+@app.route("/getedata")
+def getedata():
+    value = request.args.get("value")
+    
+    data = getEuclideanData(value)
+
+    return jsonify(data)
 
 
 @app.route('/choose')

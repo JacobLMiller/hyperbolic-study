@@ -1,0 +1,5 @@
+Build HDIlib from github source 
+Copy the install/lib files into the conda environments lib/ folder 
+Copy the install include directory int the conda environments include/ folder 
+
+Run setup.py with build_ext --inplace

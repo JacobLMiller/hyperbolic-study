@@ -13,3 +13,4 @@ WTForms==3.0.1
 pymongo[srv]
 Flask-PyMongo
 python-dotenv
+pybind11

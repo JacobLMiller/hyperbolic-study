@@ -104,15 +104,6 @@ class HyperbolicVis {
         canvas.setContextProperties(defaultProperties);
         this.hcanvas = canvas;
 
-        this.nodes = nodes;
-        this.links = [];
-
-        this.idMap = new Map();
-        this.nodes.forEach((n,index) => {
-            n.id = index;
-            this.idMap.set(n.id, index)
-        });
-
         this.initialHeight = this.hcanvas.getUnderlayElement().offsetHeight;
         
         this.setHeight();
@@ -131,6 +122,17 @@ class HyperbolicVis {
         this.appendInteraction("start");
 
         this.center_node = center_node;
+    }
+
+    addData(nodes,links){
+        this.nodes = nodes;
+        this.links = [];
+
+        this.idMap = new Map();
+        this.nodes.forEach((n,index) => {
+            n.id = index;
+            this.idMap.set(n.id, index)
+        });
     }
 
     setHeight(){

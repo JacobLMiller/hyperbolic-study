@@ -39,6 +39,14 @@
         progress_bar.style = `width: ${width}%; height: 30px;`;
         document.getElementById("progressbar-text").innerHTML = `${progress[0]} / ${progress[1]}`;
 
+        let dataselect = document.getElementById("datasets");
+        data.files.forEach(item => {
+            const option = document.createElement("option");
+            option.value = item;
+            option.textContent = item;
+            dataselect.appendChild(option);
+        });
+
         let vis, svg;
         if (data.geom === "E"){
             svg = d3.select("#visualization-container").append("svg")
@@ -61,6 +69,7 @@
             document.getElementById("visualization-container").innerHTML = "There has been a critical error, please contact the survey organizers.";
         }
 
+        vis.addData(data.nodes,null);
         vis.process();
         vis.draw();
         // vis.interact();
@@ -72,6 +81,18 @@
         sidebar.style.height = `${400}px`;
 
         vis.interact();
+
+        dataselect.addEventListener("change", () => {
+            const uurl = data.geom === "H" ? "gethdata" : "getedata"
+            fetch(`/${uurl}?value=${encodeURIComponent(dataselect.value)}`)
+                .then(response => response.json())
+                .then(data => {
+                    vis.addData(data.nodes,null);
+                    vis.process();
+                    vis.draw();
+                });
+            
+        })
         
 
         //interactions are setup here too
