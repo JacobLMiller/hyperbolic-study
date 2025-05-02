@@ -122,102 +122,25 @@ public:
         int* ptrdata = static_cast<int*>(buf.ptr);
         selection_idxes.assign(ptrdata, ptrdata + buf.shape[0]);
 
+        // std::cout << "got selectionidxes" << std::endl;
+
+
         std::map<unsigned int, scalar_type> neighbors;
         hsne_.getInfluencedLandmarksInPreviousScale(scale, selection_idxes, neighbors);
 
         return neighbors;
     }
 
-    py::array drillDown(unsigned int scale, py::array_t<int> selection){
-        std::vector<unsigned int> selection_idx;
-        std::map<unsigned int, scalar_type> landmarks = getLandmarks(scale, selection, selection_idx);
-
-        std::cout << "got landmarks" << std::endl;
-
-        scalar_type gamma = 0.5;
-
-        std::vector<unsigned int> landmarks_to_add;
-        for (auto & n : landmarks){
-            if (n.second > gamma){
-                landmarks_to_add.push_back(n.first);
-            }
-        }
-
-        std::cout << "Assigned set" << std::endl;
-
-        sparse_scalar_matrix_type new_matrix;
-        std::vector<unsigned int> new_idxes;        
-
-        std::cerr << "Scale: " << scale << std::endl;
-        std::cerr << "Transition matrix size: " << hsne_.scale(scale)._transition_matrix.size() << std::endl;
-        std::cerr << "Landmarks to add size: " << landmarks_to_add.size() << std::endl;
-        std::cerr << "Selection index size: " << selection_idx.size() << std::endl;
-
-        if (hsne_.scale(scale)._transition_matrix.size() == 0) {
-            std::cerr << "Error: Transition matrix is empty!" << std::endl;
-        }
-
-        if (landmarks_to_add.empty()) {
-            std::cerr << "Error: No landmarks provided!" << std::endl;
-        }
-
-        if (selection_idx.empty()) {
-            std::cerr << "Warning: selection_idx is empty before extractSubGraph!" << std::endl;
-        }
-
-        hdi::utils::extractSubGraph(
-            hsne_.scale(scale-1)._transition_matrix,
-            landmarks_to_add,
-            new_matrix,
-            new_idxes, 
-            1
-        );
-
-        std::cout << "Got submatrix" << std::endl;
-
-        embedding_type X;
-        computeEmbeddingX(new_matrix, X);
-
-        std::cout << "Computed embedding" << std::endl;
-
-        std::cout << "Container size: " << X.getContainer().size() << std::endl;
-        std::cout << "New matrix size: " << new_matrix.size() << std::endl;
-        std::cout << "New idxes size: " << new_idxes.size() << std::endl;
-
-
-        if (scale == 0 || hsne_.scale(scale-1)._transition_matrix.size() == 0) {
-            std::cerr << "Invalid transition matrix at scale " << scale-1 << std::endl;
-            return py::none(); // Return safely
-        }
-
-        std::vector<scalar_type> ret;
-        ret.reserve(3 * new_idxes.size());  // Reserve to avoid reallocations
-
-        for (int i = 0; i < (int)new_idxes.size(); i++) {
-            if (2 * i >= (int)X.getContainer().size()) {
-                std::cerr << "Out-of-bounds access in X.getContainer()!" << std::endl;
-                break;
-            }
-            ret.push_back(X.getContainer()[2 * i]);
-            ret.push_back(X.getContainer()[2 * i + 1]);
-            ret.push_back(new_idxes[i]);
-        }
-
-        std::cout << "Assigned ret" << std::endl;
-
-        std::cout << "Returning array of size: " << ret.size() << std::endl;
-
-
-        return py::cast(ret);
-
-    }
-
     std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<float>,std::vector<unsigned int>>
-     drillDownMatrix(unsigned int scale, py::array_t<int> selection){
+     drillDownMatrix(unsigned int scale, const py::array_t<int>& selection){
         std::vector<unsigned int> selection_idx;
+
+        // std::cout << "entered function" << std::endl;
+        // std::cout << scale << std::endl;
+
         std::map<unsigned int, scalar_type> landmarks = getLandmarks(scale, selection, selection_idx);
 
-        std::cout << "got landmarks" << std::endl;
+        // std::cout << "got landmarks" << std::endl;
 
         scalar_type gamma = 0.5;
 
@@ -228,40 +151,41 @@ public:
             }
         }
 
-        std::cout << "Assigned set" << std::endl;
+        // std::cout << "Assigned set" << std::endl;
 
         sparse_scalar_matrix_type new_matrix;
         std::vector<unsigned int> new_idxes;        
-
-        std::cerr << "Scale: " << scale << std::endl;
-        std::cerr << "Transition matrix size: " << hsne_.scale(scale)._transition_matrix.size() << std::endl;
-        std::cerr << "Landmarks to add size: " << landmarks_to_add.size() << std::endl;
-        std::cerr << "Selection index size: " << selection_idx.size() << std::endl;
-
-        if (hsne_.scale(scale)._transition_matrix.size() == 0) {
-            std::cerr << "Error: Transition matrix is empty!" << std::endl;
-        }
-
-        if (landmarks_to_add.empty()) {
-            std::cerr << "Error: No landmarks provided!" << std::endl;
-        }
-
-        if (selection_idx.empty()) {
-            std::cerr << "Warning: selection_idx is empty before extractSubGraph!" << std::endl;
-        }
-
-        hdi::utils::extractSubGraph(
-            hsne_.scale(scale-1)._transition_matrix,
-            landmarks_to_add,
-            new_matrix,
-            new_idxes, 
-            1
-        );
-
-        std::cout << "Got submatrix" << std::endl;
 
         std::vector<uint32_t> row_indices, col_indices; 
-        std::vector<float> values;
+        std::vector<float> values;        
+
+        // std::cerr << "Scale: " << scale << std::endl;
+        // std::cerr << "Transition matrix size: " << hsne_.scale(scale)._transition_matrix.size() << std::endl;
+        // std::cerr << "Landmarks to add size: " << landmarks_to_add.size() << std::endl;
+        // std::cerr << "Selection index size: " << selection_idx.size() << std::endl;
+
+        if (hsne_.scale(scale)._transition_matrix.size() == 0) {
+            std::cerr << "Error: Transition matrix is empty!" << std::endl;
+        }
+
+        if (landmarks_to_add.empty()) {
+            std::cerr << "Error: No landmarks provided!" << std::endl;
+            return {row_indices, col_indices, values, new_idxes};
+        }
+
+        if (selection_idx.empty()) {
+            std::cerr << "Warning: selection_idx is empty before extractSubGraph!" << std::endl;
+        }
+
+        hdi::utils::extractSubGraph(
+            hsne_.scale(scale-1)._transition_matrix,
+            landmarks_to_add,
+            new_matrix,
+            new_idxes, 
+            1
+        );
+
+
 
         for (uint32_t row=0; row<new_matrix.size(); ++row){
             for(const auto& [col,val] : new_matrix[row]){
@@ -282,6 +206,9 @@ public:
     }
 
     static std::shared_ptr<PyHierarchicalSNE> initialize(int num_points, int num_dim, int num_scales, py::array_t<float> data) {
+
+        // std::cout << "Hello world" << std::endl;
+
         auto hsne_instance = std::make_shared<PyHierarchicalSNE>();
 
         py::buffer_info buf = data.request();
@@ -322,7 +249,6 @@ PYBIND11_MODULE(hsne_wrapper, m) {
         .def("addScale", &PyHierarchicalSNE::addScale)
         .def("getEmbeddingAtScale", &PyHierarchicalSNE::getEmbeddingAtScale)
         .def("getIdxAtScale", &PyHierarchicalSNE::getIdxAtScale)
-        .def("drillDown", &PyHierarchicalSNE::drillDown)
         .def("drillDownMatrix", &PyHierarchicalSNE::drillDownMatrix)
         .def_static("initialize", &PyHierarchicalSNE::initialize);  // Static method to create an instance
 }

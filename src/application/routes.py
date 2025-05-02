@@ -8,14 +8,17 @@ from datetime import datetime
 from pymongo import MongoClient
 import hsne_wrapper
 import numpy as np
+from flask import g 
+import gc
 import os
+
 
 from scipy.sparse import coo_matrix
 # from mongopass import mongopass
 
 TITLE = "Hyperbolic test site"
 
-from enum import Enum 
+from enum import Enum
 SURVEY = Enum("SURVEY", ["T1", "T2", "T3"])
 
 HSNE = None
@@ -24,27 +27,30 @@ curlevel = 3
 
 ffile = "blobs"
 
-all_files = [s.replace(".json", "") for s in os.listdir("src/application/static/data/hyperbolic")]
+IS_LIVE = True
+prefix = "application" if IS_LIVE else "src/application"
+
+
+
+all_files = [s.replace(".json", "") for s in os.listdir(f"{prefix}/static/data/hyperbolic")]
 
 CLASSES = list()
 
 DATASETS = dict()
 
-
-
-def getEuclideanData(ffile='blobs'):
-    global HSNE
+def getEuclideanData(ffile="blobs"):
     global CLASSES
 
-    with open(f"src/application/static/data/hyperbolic/{ffile}.json", 'r') as fdata:
+    if not hasattr(g, 'hsne'):
+        print("Creating new HSNE instance for this request....")
+        g.hsne = create_hsne_instance(ffile)
+
+
+    with open(f"{prefix}/static/data/hyperbolic/{ffile}.json", 'r') as fdata:
         CLASSES = [d['class'] for d in json.load(fdata)]
 
-    data = np.load(f"src/application/static/data/raw_data/{ffile}.npy")
-    npnts, ndims = data.shape
-    print(npnts, ndims)
-    HSNE = hsne_wrapper.PyHierarchicalSNE().initialize(npnts, ndims, nlevels, data.flatten())
-    X = HSNE.getEmbedding().reshape((-1,2))
-    labels = HSNE.getIdxAtScale(nlevels-1)
+    X = g.hsne.getEmbedding().reshape((-1,2))
+    labels = g.hsne.getIdxAtScale(nlevels-1)
 
     curlevel = nlevels
 
@@ -64,30 +70,52 @@ def getEuclideanData(ffile='blobs'):
 
     return jsdata
 
+def create_hsne_instance(ffile='blobs'):
+    data = np.load(f"application/static/data/raw_data/{ffile}.npy")
+    npnts, ndims = data.shape
+    print(npnts, ndims)
+    hsne_instance = hsne_wrapper.PyHierarchicalSNE().initialize(npnts, ndims, nlevels, data.flatten())
+
+    return hsne_instance
+
 @app.route('/drilldown', methods=["POST"])
 def drill_down():
-    global HSNE
+    if not hasattr(g, 'hsne'):
+        print("Creating new HSNE instance for this request....")
+        g.hsne = create_hsne_instance()
     
     data = request.get_json()
-    landmarks = np.array([int(d) for d in data['landmarks']], dtype=np.uint32)
+    print(data)
+    landmarks = np.array([int(d) for d in data['landmarks']], dtype=np.int32)
     # data = np.arange(15,dtype=np.uint32)
     
-    print(landmarks)
-    print(data['scale'])
+    print("Landmarks array dtype:", landmarks.dtype)
+    print("Landmarks array shape:", landmarks.shape)
+    print("Landmarks array contents:", landmarks)
 
-    rows, columns, values, idxes = HSNE.drillDownMatrix(int(data['scale'])-1, landmarks)
+
+    print(g.hsne)
+    rows, columns, values, idxes = g.hsne.drillDownMatrix(int(data['scale'])-1, landmarks)
+
+    if not rows:
+        return jsonify({"message": "Data recieved", "status": "success", "data": {"nodes": []}}), 200
 
     n = max(max(rows), max(columns)) + 1
     mat = coo_matrix((values, (rows,columns)), shape=(n,n)).tocsr()
 
     from sklearn.manifold import TSNE
     P = mat.toarray()
-    tsne = TSNE(metric='precomputed',n_components=2,perplexity=30,init='random')
+    tsne = TSNE(metric='precomputed',n_components=2,perplexity=min(30,P.shape[0]-1),init='random')
     # tsne.learning_rate_ = 200.0
-    X2 = tsne.fit_transform(1-P)
 
+    print(P)
+    X2 = tsne.fit_transform(np.maximum(1-P,np.zeros_like(P)))
 
-    labels = HSNE.getIdxAtScale(int(data['scale']-2))
+    print(X2)
+
+    labels = g.hsne.getIdxAtScale(int(data['scale']-2))
+
+    print(labels)
 
     jsdata = {
         "nodes": [
@@ -109,21 +137,16 @@ def drill_down():
 
     return jsonify({"message": "Data recieved", "status": "success", "data": jsdata}), 200
 
+
 def getHyperbolicData(ffile="blobs"):
-    with open(f"src/application/static/data/hyperbolic/{ffile}.json", 'r') as fdata:
+    with open(f"{prefix}/static/data/hyperbolic/{ffile}.json", 'r') as fdata:
         data = json.load(fdata)
 
     jsdata = {"nodes": data, "files": all_files}
 
     return jsdata
 
-
-
-
-IS_LIVE = app.config.get("LIVE_VERSION")
-prefix = "application" if IS_LIVE else "src/application"
-
-with open(prefix + "/static/data/test-questions-2.json", "r") as qdata:
+with open("application/static/data/test-questions-2.json", "r") as qdata:
     Questions = json.load(qdata)
     # random.shuffle(Questions)
     for q_arr in Questions:
@@ -160,7 +183,7 @@ def generate_id(id):
     # return str(riemannCollection.count_documents({}))
 
 def get_graph(id):
-    floc = f"src/application/static/data/{id}.json"
+    floc = f"application/static/data/{id}.json"
     if IS_LIVE: floc = floc.replace("src/", "")
     with open(floc, 'r') as fdata:
         gdata = json.load(fdata)    
