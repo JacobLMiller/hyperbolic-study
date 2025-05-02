@@ -156,6 +156,9 @@ public:
         sparse_scalar_matrix_type new_matrix;
         std::vector<unsigned int> new_idxes;        
 
+        std::vector<uint32_t> row_indices, col_indices; 
+        std::vector<float> values;        
+
         // std::cerr << "Scale: " << scale << std::endl;
         // std::cerr << "Transition matrix size: " << hsne_.scale(scale)._transition_matrix.size() << std::endl;
         // std::cerr << "Landmarks to add size: " << landmarks_to_add.size() << std::endl;
@@ -167,6 +170,7 @@ public:
 
         if (landmarks_to_add.empty()) {
             std::cerr << "Error: No landmarks provided!" << std::endl;
+            return {row_indices, col_indices, values, new_idxes};
         }
 
         if (selection_idx.empty()) {
@@ -181,8 +185,7 @@ public:
             1
         );
 
-        std::vector<uint32_t> row_indices, col_indices; 
-        std::vector<float> values;
+
 
         for (uint32_t row=0; row<new_matrix.size(); ++row){
             for(const auto& [col,val] : new_matrix[row]){

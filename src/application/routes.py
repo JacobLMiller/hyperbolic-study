@@ -95,14 +95,19 @@ def drill_down():
     print(g.hsne)
     rows, columns, values, idxes = g.hsne.drillDownMatrix(int(data['scale'])-1, landmarks)
 
+    if not rows:
+        return jsonify({"message": "Data recieved", "status": "success", "data": {"nodes": []}}), 200
+
     n = max(max(rows), max(columns)) + 1
     mat = coo_matrix((values, (rows,columns)), shape=(n,n)).tocsr()
 
     from sklearn.manifold import TSNE
     P = mat.toarray()
-    tsne = TSNE(metric='precomputed',n_components=2,perplexity=30,init='random')
+    tsne = TSNE(metric='precomputed',n_components=2,perplexity=min(30,P.shape[0]-1),init='random')
     # tsne.learning_rate_ = 200.0
-    X2 = tsne.fit_transform(1-P)
+
+    print(P)
+    X2 = tsne.fit_transform(np.maximum(1-P,np.zeros_like(P)))
 
     print(X2)
 
