@@ -28,6 +28,9 @@ all_files = [s.replace(".json", "") for s in os.listdir("src/application/static/
 
 CLASSES = list()
 
+DATASETS = dict()
+
+
 
 def getEuclideanData(ffile='blobs'):
     global HSNE
