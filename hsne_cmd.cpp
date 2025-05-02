@@ -205,6 +205,28 @@ public:
         hsne_.addScale();
     }
 
+    std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<float>>
+    getMatrixAtTopScale(){
+
+        scale_type scale0 = hsne_.top_scale();
+        sparse_scalar_matrix_type transition = scale0._transition_matrix;
+        
+
+        std::vector<uint32_t> row_indices, col_indices; 
+        std::vector<float> values;                
+
+        for (uint32_t row=0; row<transition.size(); ++row){
+            for(const auto& [col,val] : transition[row]){
+                row_indices.push_back(row);
+                col_indices.push_back(col);
+                values.push_back(val);
+            }
+        }
+
+        return {row_indices, col_indices, values};
+
+    }
+
     static std::shared_ptr<PyHierarchicalSNE> initialize(int num_points, int num_dim, int num_scales, py::array_t<float> data) {
 
         // std::cout << "Hello world" << std::endl;
@@ -225,10 +247,10 @@ public:
             hsne_instance->hsne_.addScale();
         }
 
-        scale_type scale0 = hsne_instance->hsne_.top_scale();
-        sparse_scalar_matrix_type transition = scale0._transition_matrix;
+        // scale_type scale0 = hsne_instance->hsne_.top_scale();
+        // sparse_scalar_matrix_type transition = scale0._transition_matrix;
 
-        hsne_instance->computeEmbedding(transition);
+        // hsne_instance->computeEmbedding(transition);
 
         return hsne_instance;
     }
@@ -250,5 +272,6 @@ PYBIND11_MODULE(hsne_wrapper, m) {
         .def("getEmbeddingAtScale", &PyHierarchicalSNE::getEmbeddingAtScale)
         .def("getIdxAtScale", &PyHierarchicalSNE::getIdxAtScale)
         .def("drillDownMatrix", &PyHierarchicalSNE::drillDownMatrix)
+        .def("getMatrixAtTopScale", &PyHierarchicalSNE::getMatrixAtTopScale)
         .def_static("initialize", &PyHierarchicalSNE::initialize);  // Static method to create an instance
 }

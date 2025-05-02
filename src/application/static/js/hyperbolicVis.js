@@ -124,7 +124,7 @@ class HyperbolicVis {
         this.center_node = center_node;
     }
 
-    addData(nodes,links){
+    addData(nodes,links,fname){
         this.nodes = nodes;
         this.links = [];
 
@@ -133,6 +133,8 @@ class HyperbolicVis {
             n.id = index;
             this.idMap.set(n.id, index)
         });
+        
+        this.fname = fname;
     }
 
     setHeight(){

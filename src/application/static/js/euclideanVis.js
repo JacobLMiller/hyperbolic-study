@@ -70,7 +70,7 @@ class EuclideanVis {
 
     }
 
-    addData(nodes,links){
+    addData(nodes,links,fname){
         this.nodes = nodes;
 
         this.idMap = new Map();
@@ -78,11 +78,12 @@ class EuclideanVis {
             n.id = n.id.toString();
             this.idMap.set(n.id, index)
         });
+        this.fname = fname;
     }
 
     drillDown(){
         let landmarks = this.layer1.selectAll(".hover-node").data().map((d,i) => d.index);
-        let ddata = {"landmarks": landmarks, "scale": this.curScale};
+        let ddata = {"landmarks": landmarks, "scale": this.curScale, "fname": this.fname};
         if (this.curScale > 1){
             this.stack.push(this.nodes);
             this.loading.classList.add('display');

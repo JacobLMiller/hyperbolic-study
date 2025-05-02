@@ -11,6 +11,8 @@ import numpy as np
 from flask import g 
 import gc
 import os
+from sklearn.manifold import TSNE
+from sklearn.decomposition import PCA
 
 
 from scipy.sparse import coo_matrix
@@ -27,51 +29,75 @@ curlevel = 3
 
 ffile = "blobs"
 
-IS_LIVE = True
+IS_LIVE = False
 prefix = "application" if IS_LIVE else "src/application"
 
 
 
-all_files = [s.replace(".json", "") for s in os.listdir(f"{prefix}/static/data/hyperbolic")]
+all_files = sorted([s.replace(".json", "") for s in os.listdir(f"{prefix}/static/data/hyperbolic")])
 
 CLASSES = list()
 
 DATASETS = dict()
 
+for fname in all_files:
+    data = np.load(f"{prefix}/static/data/raw_data/{fname}.npy")
+    npnts, ndims = data.shape
+    hsne_instance = hsne_wrapper.PyHierarchicalSNE().initialize(npnts, ndims, nlevels, data.flatten())
+
+    with open(f"{prefix}/static/data/hyperbolic/{fname}.json", 'r') as fdata:
+        classes_instance = [d['class'] for d in json.load(fdata)]
+
+    DATASETS[fname] = {
+        'hsne': hsne_instance,
+        'classes': classes_instance
+    }
+
 def getEuclideanData(ffile="blobs"):
-    global CLASSES
+    hsne_instance = DATASETS[ffile]['hsne']
+    classes       = DATASETS[ffile]['classes']
 
-    if not hasattr(g, 'hsne'):
-        print("Creating new HSNE instance for this request....")
-        g.hsne = create_hsne_instance(ffile)
+    print('len of classes', len(classes))
 
+    # X = hsne_instance.getEmbedding().reshape((-1,2))
+    rows, columns, values = hsne_instance.getMatrixAtTopScale()
+    print("rows", rows[:5])
+    print("columns", columns[:5])
+    n = max(max(rows), max(columns)) + 1
+    mat = coo_matrix((values, (rows,columns)), shape=(n,n)).tocsr()
+    P = mat.toarray()
 
-    with open(f"{prefix}/static/data/hyperbolic/{ffile}.json", 'r') as fdata:
-        CLASSES = [d['class'] for d in json.load(fdata)]
+    Pprime = PCA(n_components=min(50,P.shape[0])).fit_transform(P)
 
-    X = g.hsne.getEmbedding().reshape((-1,2))
-    labels = g.hsne.getIdxAtScale(nlevels-1)
+    print("num of points", P.shape)
+
+    X = TSNE(init='pca',perplexity=min(30,P.shape[0]-1),random_state=42).fit_transform(Pprime)
+
+    labels = hsne_instance.getIdxAtScale(nlevels-1)
+
+    print('len of labels', len(labels))
 
     curlevel = nlevels
 
     jsdata = {
         "nodes": [{
             'id': int(lab), 
-            'class': CLASSES[int(lab)],
+            'class': classes[int(lab)],
             'index': i,
             "euclidean": {
                     "x": float(X[i,0]), 
                     "y": float(X[i,1])
                 }
-            } for i, lab in enumerate(labels)]
+            } for i, lab in enumerate(labels)], 
     }
 
     jsdata['files'] = all_files
+    jsdata['fname'] = ffile
 
     return jsdata
 
 def create_hsne_instance(ffile='blobs'):
-    data = np.load(f"application/static/data/raw_data/{ffile}.npy")
+    data = np.load(f"{prefix}/static/data/raw_data/{ffile}.npy")
     npnts, ndims = data.shape
     print(npnts, ndims)
     hsne_instance = hsne_wrapper.PyHierarchicalSNE().initialize(npnts, ndims, nlevels, data.flatten())
@@ -80,9 +106,6 @@ def create_hsne_instance(ffile='blobs'):
 
 @app.route('/drilldown', methods=["POST"])
 def drill_down():
-    if not hasattr(g, 'hsne'):
-        print("Creating new HSNE instance for this request....")
-        g.hsne = create_hsne_instance()
     
     data = request.get_json()
     print(data)
@@ -94,8 +117,9 @@ def drill_down():
     print("Landmarks array contents:", landmarks)
 
 
-    print(g.hsne)
-    rows, columns, values, idxes = g.hsne.drillDownMatrix(int(data['scale'])-1, landmarks)
+    fname = data['fname']
+    hsne_instance = DATASETS[fname]['hsne']
+    rows, columns, values, idxes = hsne_instance.drillDownMatrix(int(data['scale'])-1, landmarks)
 
     if not rows:
         return jsonify({"message": "Data recieved", "status": "success", "data": {"nodes": []}}), 200
@@ -113,7 +137,7 @@ def drill_down():
 
     print(X2)
 
-    labels = g.hsne.getIdxAtScale(int(data['scale']-2))
+    labels = hsne_instance.getIdxAtScale(int(data['scale']-2))
 
     print(labels)
 
@@ -122,7 +146,7 @@ def drill_down():
             {
                 "id": int(idxes[i]), 
                 "index": int(idxes[i]), 
-                "class": CLASSES[int(labels[int(idxes[i])])],
+                "class": DATASETS[fname]['classes'][int(labels[int(idxes[i])])],
                 "euclidean": {
                     "x": float(X2[i,0]),
                     "y": float(X2[i,1])
@@ -132,6 +156,7 @@ def drill_down():
     }
 
     jsdata['files'] = all_files
+    jsdata['fname'] = fname
     # print(jsdata)
     # curlevel = curlevel - 1
 
@@ -142,11 +167,11 @@ def getHyperbolicData(ffile="blobs"):
     with open(f"{prefix}/static/data/hyperbolic/{ffile}.json", 'r') as fdata:
         data = json.load(fdata)
 
-    jsdata = {"nodes": data, "files": all_files}
+    jsdata = {"nodes": data, "files": all_files, "fname": ffile}
 
     return jsdata
 
-with open("application/static/data/test-questions-2.json", "r") as qdata:
+with open(f"{prefix}/static/data/test-questions-2.json", "r") as qdata:
     Questions = json.load(qdata)
     # random.shuffle(Questions)
     for q_arr in Questions:
@@ -183,7 +208,7 @@ def generate_id(id):
     # return str(riemannCollection.count_documents({}))
 
 def get_graph(id):
-    floc = f"application/static/data/{id}.json"
+    floc = f"{prefix}/static/data/{id}.json"
     if IS_LIVE: floc = floc.replace("src/", "")
     with open(floc, 'r') as fdata:
         gdata = json.load(fdata)    
@@ -251,6 +276,7 @@ def gethdata():
 def getedata():
     value = request.args.get("value")
     
+    print(f"retrieving the {value} dataset")
     data = getEuclideanData(value)
 
     return jsonify(data)

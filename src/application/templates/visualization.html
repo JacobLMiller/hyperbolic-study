@@ -69,7 +69,7 @@
             document.getElementById("visualization-container").innerHTML = "There has been a critical error, please contact the survey organizers.";
         }
 
-        vis.addData(data.nodes,null);
+        vis.addData(data.nodes,null,data.fname);
         vis.process();
         vis.draw();
         // vis.interact();
@@ -87,7 +87,7 @@
             fetch(`/${uurl}?value=${encodeURIComponent(dataselect.value)}`)
                 .then(response => response.json())
                 .then(data => {
-                    vis.addData(data.nodes,null);
+                    vis.addData(data.nodes,null, data.fname);
                     vis.process();
                     vis.draw();
                 });
